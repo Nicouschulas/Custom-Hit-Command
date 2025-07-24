@@ -1,0 +1,12 @@
+name: CustomHitCommand
+version: '${project.version}'
+main: de.nicouschulas.customhitcommand.CustomHitCommand
+api-version: 1.21
+author: nicouschulas
+description: Executes a configurable command when hitting an other player with a configurable specific item.
+commands:
+  chc:
+    description: Reloads the CustomHitCommand plugin configuration.
+    usage: /<command> reload
+    permission: customhitcommand.reload
+    permission-message: You don't have permission to use this command.

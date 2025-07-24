@@ -1,0 +1,51 @@
+#################################################
+#############   _____ _   _  _____  #############
+#############  / ____| | | |/ ____| #############
+############# | |    | |_| | |      #############
+############# | |    |  _  | |      #############
+############# | |____| | | | |____  #############
+#############  \_____|_| |_|\_____| #############
+#################################################
+
+# --- hit item configuration ---
+
+# The material name of the item that should trigger the command.
+# Example: IRON_SWORD, DIAMOND_PICKAXE, STICK, BLAZE_ROD
+# A complete list of materials can be found here:
+# https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
+hit-item: IRON_SWORD
+
+# --- command to execute configuration ---
+
+# The command to be executed when a player
+# hits another player with the item # configured above.
+# Use %hitted_player% as placeholder for the name of the hitted player.
+# Example: duel %hitted_player%
+# Example: give %hitted_player% diamond 1
+command-to-execute: duel %hitted_player%
+
+# --- particle configuration ---
+
+particles:
+  enabled: false # Should the particle effect be activated? (true/false)
+  type: VILLAGER_HAPPY # The particle type, e.g. VILLAGER_HAPPY, HEARTS, FLAME, CRIT
+  # A complete list of particle types can be found here:
+  # https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Particle.html
+  count: 10 # The number of particles that will be spawned
+  offset-x: 0.5 # The maximum X-offset from spawnpoint
+  offset-y: 0.5 # The maximum Y-offset from spawnpoint
+  offset-z: 0.5 # The maximum Z-offset from spawnpoint
+
+# --- prefix configuration ---
+
+prefix: "&7[&cCHC&7] " # Don't forget the space at the end!
+
+# --- message configuration ---
+
+messages:
+  no-permission: "&cYou do not have permission to use this command."
+  reload-success: "&aCustom Hit Command reloaded successfully!"
+  reload-usage: "&aUse: &7/&cchc reload"
+  command-executed-log: "&a%attacker% hit %hitted_player% with an %item%. Command executed: %command%"
+  invalid-material-warning-1: "&cInvalid material in config.yml: %material%"
+  invalid-material-warning-2: "&cPlease make sure it's a valid material name (e.g., IRON_SWORD)."
