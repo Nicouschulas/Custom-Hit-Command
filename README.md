@@ -1,6 +1,3 @@
-# Custom-Hit-Command
-Executes a configurable command when hitting an other player with a configurable specific item.
-
 # **✨ CustomHitCommand: Unleash Dynamic Actions on Impact! ✨**
 
 **Custom Hit Command** let you trigger specific commands every time you hit an other player with a chosen item! This **lightweight** and ️**highly customizable** plugin is built for Paper 1.21, ensuring ⚡**fast performance** and ✨**seamless integration**.
