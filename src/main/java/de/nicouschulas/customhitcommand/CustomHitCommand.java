@@ -4,19 +4,18 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.util.Objects;
 
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.World;
 
 import org.bstats.bukkit.Metrics;
-import org.bukkit.plugin.java.JavaPlugin;
 
 public final class CustomHitCommand extends JavaPlugin {
 
-    private String chatPrefix;
-    private MiniMessage miniMessage;
+    private Component chatPrefix;
+    private final LegacyComponentSerializer legacySerializer = LegacyComponentSerializer.builder().character('&').hexColors().build();
 
     private boolean particlesEnabled;
     private Particle particleType;
@@ -27,9 +26,7 @@ public final class CustomHitCommand extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        getLogger().info("CustomHitCommand wurde gestartet!");
-
-        this.miniMessage = MiniMessage.miniMessage();
+        getLogger().info("CustomHitCommand started successfully!");
 
         saveDefaultConfig();
         loadPrefix();
@@ -40,16 +37,17 @@ public final class CustomHitCommand extends JavaPlugin {
         Objects.requireNonNull(this.getCommand("chc")).setExecutor(new ReloadCommand(this));
 
         int pluginId = 26615;
-        Metrics metrics = new Metrics(this, pluginId);
+        new Metrics(this, pluginId);
     }
 
     @Override
     public void onDisable() {
-        getLogger().info("CustomHitCommand wurde beendet!");
+        getLogger().info("CustomHitCommand shutdown successfully!");
     }
 
     public void loadPrefix() {
-        this.chatPrefix = getConfig().getString("prefix", "&7[&cCHC&7] ");
+        String rawPrefix = getConfig().getString("prefix", "&7[&cCHC&7] ");
+        this.chatPrefix = legacySerializer.deserialize(rawPrefix);
     }
 
     public void loadParticleSettings() {
@@ -58,7 +56,7 @@ public final class CustomHitCommand extends JavaPlugin {
         try {
             this.particleType = Particle.valueOf(particleTypeName.toUpperCase());
         } catch (IllegalArgumentException e) {
-            getLogger().warning("Ungültiger Partikel-Typ in der config.yml: " + particleTypeName + ". Verwende stattdessen VILLAGER_HAPPY.");
+            getLogger().warning("Invalid particle type in config.yml: " + particleTypeName);
             this.particleType = Particle.HAPPY_VILLAGER;
         }
         this.particleCount = getConfig().getInt("particles.count", 10);
@@ -68,9 +66,9 @@ public final class CustomHitCommand extends JavaPlugin {
     }
 
     public Component getFormattedMessage(String messageKey) {
-        String message = getConfig().getString("messages." + messageKey, "Nachricht nicht gefunden: " + messageKey);
-        String fullMessage = chatPrefix + message;
-        return miniMessage.deserialize(fullMessage);
+        String message = getConfig().getString("messages." + messageKey, "Message not found: " + messageKey);
+        Component messageComponent = legacySerializer.deserialize(message);
+        return chatPrefix.append(messageComponent);
     }
 
     public void spawnHitParticles(Location location) {

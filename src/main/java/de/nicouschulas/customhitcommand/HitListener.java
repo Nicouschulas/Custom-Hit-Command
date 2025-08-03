@@ -10,9 +10,13 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.Bukkit;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+
 public class HitListener implements Listener {
 
     private final CustomHitCommand plugin;
+    private final LegacyComponentSerializer legacySerializer = LegacyComponentSerializer.builder().character('&').build();
 
     public HitListener(CustomHitCommand plugin) {
         this.plugin = plugin;
@@ -38,11 +42,11 @@ public class HitListener implements Listener {
         try {
             requiredMaterial = Material.valueOf(configuredMaterialName.toUpperCase());
         } catch (IllegalArgumentException e) {
-            String warning1 = plugin.getFormattedMessage("invalid-material-warning-1").toString();
-            String warning2 = plugin.getFormattedMessage("invalid-material-warning-2").toString();
+            Component warning1 = plugin.getFormattedMessage("invalid-material-warning-1").replaceText(builder -> builder.match("%material%").replacement(configuredMaterialName));
+            Component warning2 = plugin.getFormattedMessage("invalid-material-warning-2");
 
-            plugin.getLogger().warning(warning1.replace("%material%", configuredMaterialName));
-            plugin.getLogger().warning(warning2);
+            plugin.getLogger().warning(legacySerializer.serialize(warning1));
+            plugin.getLogger().warning(legacySerializer.serialize(warning2));
 
             requiredMaterial = Material.IRON_SWORD;
         }
@@ -56,7 +60,7 @@ public class HitListener implements Listener {
 
             plugin.spawnHitParticles(hittedPlayer.getLocation());
 
-            String logMessageTemplate = plugin.getFormattedMessage("command-executed-log").toString();
+            String logMessageTemplate = legacySerializer.serialize(plugin.getFormattedMessage("command-executed-log"));
 
             String finalLogMessage = logMessageTemplate
                     .replace("%attacker%", attacker.getName())
