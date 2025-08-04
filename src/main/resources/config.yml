@@ -36,6 +36,14 @@ particles:
   offset-y: 0.5 # The maximum Y-offset from spawnpoint
   offset-z: 0.5 # The maximum Z-offset from spawnpoint
 
+# --- update checker configuration ---
+
+update-checker:
+  enabled: true # Enable/disable the update checker
+  # How should update notifications be displayed?
+  # Options: "console", "player" or "both"
+  notify-method: "both"
+
 # --- prefix configuration ---
 
 prefix: "&7[&cCHC&7] " # Don't forget the space at the end!
