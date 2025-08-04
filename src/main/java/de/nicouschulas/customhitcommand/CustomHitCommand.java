@@ -2,21 +2,34 @@ package de.nicouschulas.customhitcommand;
 
 import org.bukkit.plugin.java.JavaPlugin;
 import java.util.Objects;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Scanner;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.World;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
 
 import org.bstats.bukkit.Metrics;
 
-public final class CustomHitCommand extends JavaPlugin {
+public final class CustomHitCommand extends JavaPlugin implements Listener {
 
     private Component chatPrefix;
     private final LegacyComponentSerializer legacySerializer = LegacyComponentSerializer.builder().character('&').hexColors().build();
 
+    private String latestVersion = null;
     private boolean particlesEnabled;
     private Particle particleType;
     private int particleCount;
@@ -32,12 +45,15 @@ public final class CustomHitCommand extends JavaPlugin {
         loadPrefix();
         loadParticleSettings();
 
+        getServer().getPluginManager().registerEvents(this, this);
         getServer().getPluginManager().registerEvents(new HitListener(this), this);
 
         Objects.requireNonNull(this.getCommand("chc")).setExecutor(new ReloadCommand(this));
 
         int pluginId = 26615;
         new Metrics(this, pluginId);
+
+        checkForUpdates();
     }
 
     @Override
@@ -96,5 +112,71 @@ public final class CustomHitCommand extends JavaPlugin {
         super.reloadConfig();
         loadPrefix();
         loadParticleSettings();
+    }
+
+    private void checkForUpdates() {
+        if (!getConfig().getBoolean("update-checker.enabled", true)) {
+            return;
+        }
+
+        String notifyMethod = getConfig().getString("update-checker.notify-method", "both");
+
+        Bukkit.getScheduler().runTaskAsynchronously(this, () -> {
+            try {
+                URL url = new URI("https://api.modrinth.com/v2/project/eXM4AQg2/version?loaders=paper&game_versions=1.21").toURL();
+
+                try (InputStream inputStream = url.openStream(); Scanner scanner = new Scanner(inputStream)) {
+                    StringBuilder response = new StringBuilder();
+                    while (scanner.hasNextLine()) {
+                        response.append(scanner.nextLine());
+                    }
+                    String json = response.toString();
+
+                    if (json.contains("\"version_number\":\"")) {
+                        String fetchedLatestVersion = json.split("\"version_number\":\"")[1].split("\"")[0];
+                        String currentVersion = getPluginMeta().getVersion();
+
+                        if (!currentVersion.equals(fetchedLatestVersion)) {
+                            this.latestVersion = fetchedLatestVersion;
+
+                            if (notifyMethod.equals("console") || notifyMethod.equals("both")) {
+                                getLogger().warning("-----------------------------------------------------");
+                                getLogger().warning("A new version of Custom Hit Command is available!");
+                                getLogger().warning("Current version: " + currentVersion);
+                                getLogger().warning("Latest version: " + this.latestVersion);
+                                getLogger().warning("Download it here: https://modrinth.com/plugin/chc/versions");
+                                getLogger().warning("-----------------------------------------------------");
+                            }
+                        }
+                    }
+                }
+            } catch (IOException | URISyntaxException e) {
+                getLogger().warning("Update checker failed to connect to the server!");
+            }
+        });
+    }
+
+    @EventHandler
+    public void onPlayerJoin(PlayerJoinEvent event) {
+        if (!getConfig().getBoolean("update-checker.enabled", true)) {
+            return;
+        }
+
+        String notifyMethod = getConfig().getString("update-checker.notify-method", "both");
+
+        if (this.latestVersion != null) {
+            Player player = event.getPlayer();
+            if ((notifyMethod.equals("player") || notifyMethod.equals("both")) && player.hasPermission("customhitcommand.update")) {
+
+                Component textComponent = legacySerializer.deserialize("&aA new version of Custom Hit Command is available: " + this.latestVersion + " ");
+
+                Component linkComponent = Component.text("Click to download it at Modrinth", NamedTextColor.GRAY)
+                        .clickEvent(ClickEvent.openUrl("https://modrinth.com/plugin/chc/versions"));
+
+                Component updateMessage = chatPrefix.append(textComponent).append(linkComponent);
+
+                player.sendMessage(updateMessage);
+            }
+        }
     }
 }
