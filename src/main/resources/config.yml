@@ -18,11 +18,24 @@ hit-item: IRON_SWORD
 # --- command to execute configuration ---
 
 # The command to be executed when a player
-# hits another player with the item # configured above.
-# Use %hitted_player% as placeholder for the name of the hitted player.
+# hits another player with the configured item.
+# Use %hitted_player% as placeholder for the name of the hit player.
 # Example: duel %hitted_player%
 # Example: give %hitted_player% diamond 1
 command-to-execute: duel %hitted_player%
+
+# --- security configuration ---
+# NEW: Security settings to prevent abuse and attacks
+
+security:
+  # Cooldown time in seconds between command executions per player
+  # This prevents spam-clicking to execute commands rapidly
+  # Minimum: 1 second, Recommended: 3-5 seconds for most servers
+  cooldown-seconds: 3
+
+  # Enable additional security logging (for debugging/monitoring)
+  # Set to true if you want detailed logs of all security checks
+  enhanced-logging: false
 
 # --- particle configuration ---
 
@@ -51,9 +64,17 @@ prefix: "&7[&cCHC&7] " # Don't forget the space at the end!
 # --- message configuration ---
 
 messages:
+  # Original messages
   no-permission: "&cYou do not have permission to use this command."
   reload-success: "&aCustom Hit Command reloaded successfully!"
   reload-usage: "&aUse: &7/&cchc reload"
   command-executed-log: "&a%attacker% hit %hitted_player% with an %item%. Command executed: %command%"
   invalid-material-warning-1: "&cInvalid material in config.yml: %material%"
   invalid-material-warning-2: "&cPlease make sure it's a valid material name (e.g., IRON_SWORD)."
+
+  # NEW: Security-related messages
+  cooldown-message: "&cPlease wait &e%seconds% &cmore seconds before using this command again."
+  command-execution-failed: "&cSomething went wrong while executing the command. Please contact an administrator."
+
+  # NEW: Admin notification messages (shown to players with update permission)
+  security-alert-admin: "&cSECURITY ALERT: Potential command injection attempt detected. Check console for details."
