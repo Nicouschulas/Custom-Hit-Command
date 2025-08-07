@@ -7,6 +7,7 @@
 #############  \_____|_| |_|\_____| #############
 #################################################
 
+
 # --- hit item configuration ---
 
 # The material name of the item that should trigger the command.
@@ -15,14 +16,16 @@
 # https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
 hit-item: IRON_SWORD
 
+
 # --- command to execute configuration ---
 
 # The command to be executed when a player
-# hits another player with the item # configured above.
+# hits another player with the configured item.
 # Use %hitted_player% as placeholder for the name of the hitted player.
 # Example: duel %hitted_player%
 # Example: give %hitted_player% diamond 1
 command-to-execute: duel %hitted_player%
+
 
 # --- particle configuration ---
 
@@ -36,6 +39,16 @@ particles:
   offset-y: 0.5 # The maximum Y-offset from spawnpoint
   offset-z: 0.5 # The maximum Z-offset from spawnpoint
 
+
+# --- security configuration ---
+
+security:
+  # Cooldown time in milliseconds between command executions per player
+  # This prevents spam-clicking to execute commands rapidly
+  # Minimum: 100 milliseconds
+  cooldown-milliseconds: 100
+
+
 # --- update checker configuration ---
 
 update-checker:
@@ -44,9 +57,11 @@ update-checker:
   # Options: "console", "player" or "both"
   notify-method: "both"
 
+
 # --- prefix configuration ---
 
 prefix: "&7[&cCHC&7] " # Don't forget the space at the end!
+
 
 # --- message configuration ---
 
@@ -54,6 +69,7 @@ messages:
   no-permission: "&cYou do not have permission to use this command."
   reload-success: "&aCustom Hit Command reloaded successfully!"
   reload-usage: "&aUse: &7/&cchc reload"
+  cooldown-message: "&cYou must wait %seconds% seconds before you can use this command again."
   command-executed-log: "&a%attacker% hit %hitted_player% with an %item%. Command executed: %command%"
   invalid-material-warning-1: "&cInvalid material in config.yml: %material%"
   invalid-material-warning-2: "&cPlease make sure it's a valid material name (e.g., IRON_SWORD)."

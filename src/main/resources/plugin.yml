@@ -10,3 +10,7 @@ commands:
     usage: /<command> reload
     permission: customhitcommand.reload
     permission-message: You don't have permission to use this command.
+permissions:
+  customhitcommand.update:
+    description: Receives update notifications for the CustomHitCommand plugin.
+    default: op
