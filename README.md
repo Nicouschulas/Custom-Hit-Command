@@ -24,6 +24,9 @@
 
 Get CustomHitCommand now and bring a new layer of excitement to your server!
 
+## **📥 Download:**
+Download it at Modrinth: https://modrinth.com/plugin/chc
+
 ## **❓ Q&A:**
 **Why is the compiled plugin (JAR file) larger than the source code on GitHub?**
 
