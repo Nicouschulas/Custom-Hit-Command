@@ -32,6 +32,17 @@ public class HitListener implements Listener {
             return;
         }
 
+        if (!SecurityUtils.canPlayerUseCommand(attacker.getUniqueId())) {
+            long remainingMs = SecurityUtils.getRemainingCooldown(attacker.getUniqueId());
+            long remainingSeconds = (remainingMs / 1000) + 1;
+
+            Component cooldownMessage = plugin.getFormattedMessage("cooldown-message")
+                    .replaceText(builder -> builder.match("%seconds%").replacement(String.valueOf(remainingSeconds)));
+
+            attacker.sendMessage(cooldownMessage);
+            return;
+        }
+
         ItemStack handItem = attacker.getInventory().getItemInMainHand();
 
         FileConfiguration config = plugin.getConfig();

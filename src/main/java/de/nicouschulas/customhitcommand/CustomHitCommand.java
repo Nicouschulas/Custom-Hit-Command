@@ -39,7 +39,7 @@ public final class CustomHitCommand extends JavaPlugin implements Listener {
 
     @Override
     public void onEnable() {
-        getLogger().info("CustomHitCommand started successfully!");
+        getLogger().info("CustomHitCommand is starting...");
 
         saveDefaultConfig();
         loadPrefix();
@@ -54,6 +54,10 @@ public final class CustomHitCommand extends JavaPlugin implements Listener {
         new Metrics(this, pluginId);
 
         checkForUpdates();
+
+        startSecurityMaintenanceTasks();
+
+        getLogger().info("CustomHitCommand started successfully!");
     }
 
     @Override
@@ -70,7 +74,11 @@ public final class CustomHitCommand extends JavaPlugin implements Listener {
         this.particlesEnabled = getConfig().getBoolean("particles.enabled", false);
         String particleTypeName = getConfig().getString("particles.type", "VILLAGER_HAPPY");
         try {
-            this.particleType = Particle.valueOf(particleTypeName.toUpperCase());
+            if (particleTypeName.equalsIgnoreCase("VILLAGER_HAPPY")) {
+                this.particleType = Particle.HAPPY_VILLAGER;
+            } else {
+                this.particleType = Particle.valueOf(particleTypeName.toUpperCase());
+            }
         } catch (IllegalArgumentException e) {
             getLogger().warning("Invalid particle type in config.yml: " + particleTypeName);
             this.particleType = Particle.HAPPY_VILLAGER;
@@ -79,6 +87,12 @@ public final class CustomHitCommand extends JavaPlugin implements Listener {
         this.particleOffsetX = getConfig().getDouble("particles.offset-x", 0.5);
         this.particleOffsetY = getConfig().getDouble("particles.offset-y", 0.5);
         this.particleOffsetZ = getConfig().getDouble("particles.offset-z", 0.5);
+    }
+
+    public void loadSecuritySettings() {
+        long cooldownMs = getConfig().getLong("security.cooldown-milliseconds", 3000);
+        SecurityUtils.setCooldownTime(cooldownMs);
+        getLogger().info("Security configuration loaded: Command cooldown is " + (cooldownMs / 1000.0) + " seconds.");
     }
 
     public Component getFormattedMessage(String messageKey) {
@@ -112,6 +126,7 @@ public final class CustomHitCommand extends JavaPlugin implements Listener {
         super.reloadConfig();
         loadPrefix();
         loadParticleSettings();
+        loadSecuritySettings();
     }
 
     private void checkForUpdates() {
@@ -178,5 +193,12 @@ public final class CustomHitCommand extends JavaPlugin implements Listener {
                 player.sendMessage(updateMessage);
             }
         }
+    }
+
+    private void startSecurityMaintenanceTasks() {
+        Bukkit.getScheduler().runTaskTimerAsynchronously(this, () -> {
+            SecurityUtils.cleanupOldEntries();
+            getLogger().fine("Security maintenance: old cooldown entries cleaned.");
+        }, 12000L, 12000L);
     }
 }
