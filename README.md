@@ -10,15 +10,17 @@
 
 🔧 **Configurable Hit Item**: Define which item triggers the action (e.g., an Iron Sword, a Blaze Rod – your choice!).
 
-🔗 **Dynamic Command Execution:** Set any server command to run upon a successful hit.
+🎯 **Dynamic Command Execution**: Set any server command to run upon a successful hit. Use the **`%hitted_player%`** placeholder to automatically insert the name of the player you hit (e.g., `/duel %hitted_player%`).
 
-🎯 **`%hitted_player%` Placeholder:** Automatically replaces with the name of the player you hit, allowing for truly dynamic interactions (e.g., `/duel %hitted_player%`).
+✨ **Visual Hit Particles**: Configure eye-catching particle effects to appear at the location of the hit player, adding a visually dynamic element to your commands.
 
-✨ **Visual Hit Particles:** Configure eye-catching particle effects to appear at the location of the hit player, adding a visually dynamic element to your commands.
+💬 **Customizable Messages**: Tailor nearly all plugin messages to match your server's style.
 
-💬 **Customizable Messages:** Tailor nearly all plugin messages to match your server's style.
+🔎 **Enhanced Logging**: An optional, enhanced logging system can be enabled to provide detailed debug information for troubleshooting.
 
-🔔 **Update Notifications:** An automatic update checker can be configured to notify you in the console or directly in-game when a new version is available. It can be easily toggled on/off in the configuration.
+⚙️ **Robust Error Handling**: The plugin features a more robust fallback system and improved error handling, making it more resilient to configuration mistakes.
+
+🔔 **Update Notifications**: An automatic update checker can be configured to notify you in the console or directly in-game when a new version is available. It can be easily toggled on/off in the configuration.
 
 ⚙️ **Effortless Setup:** Simple config.yml for quick adjustments.
 
