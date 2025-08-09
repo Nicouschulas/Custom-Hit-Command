@@ -5,13 +5,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
-public class ReloadCommand implements CommandExecutor {
-
-    private final CustomHitCommand plugin;
-
-    public ReloadCommand(CustomHitCommand plugin) {
-        this.plugin = plugin;
-    }
+public record ReloadCommand(CustomHitCommand plugin) implements CommandExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {

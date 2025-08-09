@@ -1,5 +1,6 @@
 package de.nicouschulas.customhitcommand;
 
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -11,16 +12,8 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.Bukkit;
 
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 
-public class HitListener implements Listener {
-
-    private final CustomHitCommand plugin;
-    private final LegacyComponentSerializer legacySerializer = LegacyComponentSerializer.builder().character('&').build();
-
-    public HitListener(CustomHitCommand plugin) {
-        this.plugin = plugin;
-    }
+public record HitListener(CustomHitCommand plugin) implements Listener {
 
     @EventHandler
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
@@ -53,33 +46,46 @@ public class HitListener implements Listener {
         try {
             requiredMaterial = Material.valueOf(configuredMaterialName.toUpperCase());
         } catch (IllegalArgumentException e) {
-            Component warning1 = plugin.getFormattedMessage("invalid-material-warning-1").replaceText(builder -> builder.match("%material%").replacement(configuredMaterialName));
-            Component warning2 = plugin.getFormattedMessage("invalid-material-warning-2");
-
-            plugin.getLogger().warning(legacySerializer.serialize(warning1));
-            plugin.getLogger().warning(legacySerializer.serialize(warning2));
+            plugin.getLogger().severe("=== CONFIGURATION ERROR ===");
+            plugin.getLogger().severe("Invalid material specified in config.yml: " + configuredMaterialName);
+            plugin.getLogger().severe("Using IRON_SWORD as a temporary fallback.");
+            plugin.getLogger().severe("=========================");
 
             requiredMaterial = Material.IRON_SWORD;
         }
 
         if (handItem.getType() == requiredMaterial) {
             String command = config.getString("command-to-execute", "duel %hitted_player%");
+
+            if (!SecurityUtils.isCommandTemplateSafe(command)) {
+                plugin.getLogger().severe("=== SECURITY ALERT ===");
+                plugin.getLogger().severe("Unsafe command template detected: " + command);
+                plugin.getLogger().severe("Command execution blocked for security reasons.");
+                plugin.getLogger().severe("===================");
+                return;
+            }
+
             String finalCommand = command.replace("%hitted_player%", hittedPlayer.getName());
-
             ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();
-            Bukkit.dispatchCommand(console, finalCommand);
 
-            plugin.spawnHitParticles(hittedPlayer.getLocation());
+            try {
+                Bukkit.dispatchCommand(console, finalCommand);
+                plugin.spawnHitParticles(hittedPlayer.getLocation());
 
-            String logMessageTemplate = legacySerializer.serialize(plugin.getFormattedMessage("command-executed-log"));
+                Component logMessage = plugin.getFormattedMessage("command-executed-log")
+                        .replaceText(builder -> builder.match("%attacker%").replacement(attacker.getName()))
+                        .replaceText(builder -> builder.match("%hitted_player%").replacement(hittedPlayer.getName()))
+                        .replaceText(builder -> builder.match("%item%").replacement(handItem.getType().name()))
+                        .replaceText(builder -> builder.match("%command%").replacement(finalCommand));
 
-            String finalLogMessage = logMessageTemplate
-                    .replace("%attacker%", attacker.getName())
-                    .replace("%hitted_player%", hittedPlayer.getName())
-                    .replace("%item%", handItem.getType().name())
-                    .replace("%command%", finalCommand);
+                plugin.getLogger().info(LegacyComponentSerializer.legacySection().serialize(logMessage));
+            } catch (Exception e) {
+                plugin.getLogger().severe("Failed to execute command: " + finalCommand);
+                plugin.getLogger().severe("Error details: " + e.getMessage());
 
-            plugin.getLogger().info(finalLogMessage);
+                Component errorMessage = plugin.getFormattedMessage("command-execution-failed");
+                attacker.sendMessage(errorMessage);
+            }
         }
     }
 }

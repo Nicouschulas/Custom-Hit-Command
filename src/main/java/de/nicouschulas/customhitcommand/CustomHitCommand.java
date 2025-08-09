@@ -8,6 +8,7 @@ import java.net.URL;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Scanner;
+import java.util.logging.Level;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
@@ -37,13 +38,14 @@ public final class CustomHitCommand extends JavaPlugin implements Listener {
     private double particleOffsetY;
     private double particleOffsetZ;
 
+    private boolean enhancedSecurityLogging;
+
     @Override
     public void onEnable() {
         getLogger().info("CustomHitCommand is starting...");
 
         saveDefaultConfig();
-        loadPrefix();
-        loadParticleSettings();
+        reloadConfig();
 
         getServer().getPluginManager().registerEvents(this, this);
         getServer().getPluginManager().registerEvents(new HitListener(this), this);
@@ -68,6 +70,10 @@ public final class CustomHitCommand extends JavaPlugin implements Listener {
     public void loadPrefix() {
         String rawPrefix = getConfig().getString("prefix", "&7[&cCHC&7] ");
         this.chatPrefix = legacySerializer.deserialize(rawPrefix);
+
+        if (enhancedSecurityLogging) {
+            getLogger().fine("Chat prefix loaded: " + rawPrefix);
+        }
     }
 
     public void loadParticleSettings() {
@@ -81,18 +87,27 @@ public final class CustomHitCommand extends JavaPlugin implements Listener {
             }
         } catch (IllegalArgumentException e) {
             getLogger().warning("Invalid particle type in config.yml: " + particleTypeName);
+            getLogger().warning("Falling back to HAPPY_VILLAGER.");
             this.particleType = Particle.HAPPY_VILLAGER;
         }
-        this.particleCount = getConfig().getInt("particles.count", 10);
-        this.particleOffsetX = getConfig().getDouble("particles.offset-x", 0.5);
-        this.particleOffsetY = getConfig().getDouble("particles.offset-y", 0.5);
-        this.particleOffsetZ = getConfig().getDouble("particles.offset-z", 0.5);
+        this.particleCount = Math.max(1, Math.min(100, getConfig().getInt("particles.count", 10)));
+        this.particleOffsetX = Math.max(0.0, Math.min(5.0, getConfig().getDouble("particles.offset-x", 0.5)));
+        this.particleOffsetY = Math.max(0.0, Math.min(5.0, getConfig().getDouble("particles.offset-y", 0.5)));
+        this.particleOffsetZ = Math.max(0.0, Math.min(5.0, getConfig().getDouble("particles.offset-z", 0.5)));
     }
 
     public void loadSecuritySettings() {
         long cooldownMs = getConfig().getLong("security.cooldown-milliseconds", 3000);
         SecurityUtils.setCooldownTime(cooldownMs);
         getLogger().info("Security configuration loaded: Command cooldown is " + (cooldownMs / 1000.0) + " seconds.");
+
+        this.enhancedSecurityLogging = getConfig().getBoolean("security.enhanced-logging", false);
+        if (this.enhancedSecurityLogging) {
+            getLogger().info("Enhanced security logging is ENABLED.");
+            this.getLogger().setLevel(Level.FINE);
+        } else {
+            this.getLogger().setLevel(Level.INFO);
+        }
     }
 
     public Component getFormattedMessage(String messageKey) {
@@ -111,22 +126,30 @@ public final class CustomHitCommand extends JavaPlugin implements Listener {
             return;
         }
 
-        world.spawnParticle(
-                particleType,
-                location,
-                particleCount,
-                particleOffsetX,
-                particleOffsetY,
-                particleOffsetZ
-        );
+        try {
+            world.spawnParticle(
+                    particleType,
+                    location,
+                    particleCount,
+                    particleOffsetX,
+                    particleOffsetY,
+                    particleOffsetZ
+            );
+        } catch (Exception e) {
+            getLogger().warning("Failed to spawn particles: " + e.getMessage());
+        }
+
+        if (enhancedSecurityLogging) {
+            getLogger().fine("Particles spawned at " + location);
+        }
     }
 
     @Override
     public void reloadConfig() {
         super.reloadConfig();
+        loadSecuritySettings();
         loadPrefix();
         loadParticleSettings();
-        loadSecuritySettings();
     }
 
     private void checkForUpdates() {
@@ -198,7 +221,9 @@ public final class CustomHitCommand extends JavaPlugin implements Listener {
     private void startSecurityMaintenanceTasks() {
         Bukkit.getScheduler().runTaskTimerAsynchronously(this, () -> {
             SecurityUtils.cleanupOldEntries();
-            getLogger().fine("Security maintenance: old cooldown entries cleaned.");
+            if (enhancedSecurityLogging) {
+                getLogger().fine("Security maintenance: old cooldown entries cleaned.");
+            }
         }, 12000L, 12000L);
     }
 }
