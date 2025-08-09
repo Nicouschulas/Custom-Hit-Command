@@ -48,6 +48,11 @@ security:
   # Minimum: 100 milliseconds
   cooldown-milliseconds: 100
 
+  # Set to true for more detailed debug messages in the console.
+  # This can be useful for troubleshooting but will produce a lot of log output.
+  # Recommended to keep this false for production servers.
+  enhanced-logging: false
+
 
 # --- update checker configuration ---
 
@@ -67,9 +72,12 @@ prefix: "&7[&cCHC&7] " # Don't forget the space at the end!
 
 messages:
   no-permission: "&cYou do not have permission to use this command."
+  ###################################################################################################
   reload-success: "&aCustom Hit Command reloaded successfully!"
   reload-usage: "&aUse: &7/&cchc reload"
+  ###################################################################################################
   cooldown-message: "&cYou must wait %seconds% seconds before you can use this command again."
+  ###################################################################################################
   command-executed-log: "&a%attacker% hit %hitted_player% with an %item%. Command executed: %command%"
-  invalid-material-warning-1: "&cInvalid material in config.yml: %material%"
-  invalid-material-warning-2: "&cPlease make sure it's a valid material name (e.g., IRON_SWORD)."
+  ###################################################################################################
+  command-execution-failed: "&cAn error occurred while trying to execute the command."
