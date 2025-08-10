@@ -1,17 +1,16 @@
 package de.nicouschulas.customhitcommand;
 
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.Bukkit;
-
-import net.kyori.adventure.text.Component;
 
 public record HitListener(CustomHitCommand plugin) implements Listener {
 
@@ -48,7 +47,7 @@ public record HitListener(CustomHitCommand plugin) implements Listener {
         } catch (IllegalArgumentException e) {
             plugin.getLogger().severe("=== CONFIGURATION ERROR ===");
             plugin.getLogger().severe("Invalid material specified in config.yml: " + configuredMaterialName);
-            plugin.getLogger().severe("Using IRON_SWORD as a temporary fallback.");
+            plugin.getLogger().severe("Using IRON_SWORD as a temporary fallback!");
             plugin.getLogger().severe("=========================");
 
             requiredMaterial = Material.IRON_SWORD;
@@ -66,10 +65,16 @@ public record HitListener(CustomHitCommand plugin) implements Listener {
             }
 
             String finalCommand = command.replace("%hitted_player%", hittedPlayer.getName());
-            ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();
+            String commandExecutor = config.getString("command-executor", "console");
 
             try {
-                Bukkit.dispatchCommand(console, finalCommand);
+                if (commandExecutor.equalsIgnoreCase("player")) {
+                    attacker.chat("/" + finalCommand);
+                } else {
+                    ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();
+                    Bukkit.dispatchCommand(console, finalCommand);
+                }
+
                 plugin.spawnHitParticles(hittedPlayer.getLocation());
 
                 Component logMessage = plugin.getFormattedMessage("command-executed-log")
