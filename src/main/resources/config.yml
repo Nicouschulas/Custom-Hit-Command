@@ -22,7 +22,7 @@ hit-item: IRON_SWORD
 # The command to be executed when a player
 # hits another player with the configured item.
 # Use %hitted_player% as placeholder for the name of the hitted player.
-# DON'T use /
+# Please do NOT include the leading slash (/) in the command.
 # Example: duel %hitted_player%
 # Example: give %hitted_player% diamond 1
 command-to-execute: duel %hitted_player%
