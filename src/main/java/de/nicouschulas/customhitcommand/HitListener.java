@@ -77,13 +77,16 @@ public record HitListener(CustomHitCommand plugin) implements Listener {
 
                 plugin.spawnHitParticles(hittedPlayer.getLocation());
 
-                Component logMessage = plugin.getFormattedMessage("command-executed-log")
-                        .replaceText(builder -> builder.match("%attacker%").replacement(attacker.getName()))
-                        .replaceText(builder -> builder.match("%hitted_player%").replacement(hittedPlayer.getName()))
-                        .replaceText(builder -> builder.match("%item%").replacement(handItem.getType().name()))
-                        .replaceText(builder -> builder.match("%command%").replacement(finalCommand));
+                if (plugin.isEnhancedSecurityLogging()) {
+                    Component logMessage = plugin.getFormattedMessage("command-executed-log")
+                            .replaceText(builder -> builder.match("%attacker%").replacement(attacker.getName()))
+                            .replaceText(builder -> builder.match("%hitted_player%").replacement(hittedPlayer.getName()))
+                            .replaceText(builder -> builder.match("%item%").replacement(handItem.getType().name()))
+                            .replaceText(builder -> builder.match("%command%").replacement(finalCommand));
 
-                plugin.getLogger().info(LegacyComponentSerializer.legacySection().serialize(logMessage));
+                    plugin.getLogger().info(LegacyComponentSerializer.legacySection().serialize(logMessage));
+                }
+
             } catch (Exception e) {
                 plugin.getLogger().severe("Failed to execute command: " + finalCommand);
                 plugin.getLogger().severe("Error details: " + e.getMessage());

@@ -40,6 +40,10 @@ public final class CustomHitCommand extends JavaPlugin implements Listener {
 
     private boolean enhancedSecurityLogging;
 
+    public boolean isEnhancedSecurityLogging() {
+        return this.enhancedSecurityLogging;
+    }
+
     @Override
     public void onEnable() {
         getLogger().info("CustomHitCommand is starting...");
