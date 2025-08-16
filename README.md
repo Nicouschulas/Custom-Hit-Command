@@ -2,6 +2,9 @@
 
 **Custom Hit Command** lets you trigger specific commands every time you hit another player with a chosen item! This **lightweight** and **highly customizable** plugin is built for Paper 1.21, ensuring ⚡**fast performance** and ✨**seamless integration**.
 
+# ⚠️ **DELAY:** ⚠️
+I am currently working on adding multi-version support to include all versions from 1.8 to the latest. This will take some time, so don't be surprised if there are no updates in the next few days.
+
 ## ️**🛡️ Commands & Permissions:**
 - `/chc reload` | `customhitcommand.reload`
 - `customhitcommand.update` (for in-game update notifications)
