@@ -1,4 +1,5 @@
 # **✨ CustomHitCommand: Unleash Dynamic Actions on Impact! ✨**
+![Download count](https://img.shields.io/curseforge/dt/1308743?style=for-the-badge&logo=curseforge&color=D02F2F&link=https://www.curseforge.com/minecraft/bukkit-plugins/chc&link=https://www.curseforge.com/minecraft/bukkit-plugins/chc) ![Modrinth Downloads](https://img.shields.io/modrinth/dt/eXM4AQg2?style=for-the-badge&logo=modrinth&color=D02F2F&link=https%3A%2F%2Fmodrinth.com%2Fplugin%2Fchc&link=https%3A%2F%2Fmodrinth.com%2Fplugin%2Fchc)  ![Spiget Downloads](https://img.shields.io/spiget/downloads/127038?style=for-the-badge&logo=spigotmc&color=D02F2F&link=https%3A%2F%2Fwww.spigotmc.org%2Fresources%2Fchc-custom-hit-command.127038%2F&link=https%3A%2F%2Fwww.spigotmc.org%2Fresources%2Fchc-custom-hit-command.127038%2F)
 
 **Custom Hit Command** lets you trigger specific commands every time you hit another player with a chosen item! This **lightweight** and **highly customizable** plugin is built for Paper 1.21, ensuring ⚡**fast performance** and ✨**seamless integration**.
 
