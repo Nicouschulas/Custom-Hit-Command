@@ -1,5 +1,6 @@
 package de.nicouschulas.customhitcommand;
 
+import org.bukkit.*;
 import org.bukkit.plugin.java.JavaPlugin;
 import java.util.Objects;
 import java.io.IOException;
@@ -14,10 +15,6 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import org.bukkit.Location;
-import org.bukkit.Particle;
-import org.bukkit.World;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -29,6 +26,7 @@ public final class CustomHitCommand extends JavaPlugin implements Listener {
 
     private Component chatPrefix;
     private final LegacyComponentSerializer legacySerializer = LegacyComponentSerializer.builder().character('&').hexColors().build();
+    public static NamespacedKey CUSTOM_ITEM_KEY;
 
     private String latestVersion = null;
     private boolean particlesEnabled;
@@ -50,6 +48,10 @@ public final class CustomHitCommand extends JavaPlugin implements Listener {
 
         saveDefaultConfig();
         reloadConfig();
+
+        CUSTOM_ITEM_KEY = new NamespacedKey(this, "custom-hit-item");
+
+        getServer().getPluginManager().registerEvents(new HitListener(this), this);
 
         getServer().getPluginManager().registerEvents(this, this);
         getServer().getPluginManager().registerEvents(new HitListener(this), this);

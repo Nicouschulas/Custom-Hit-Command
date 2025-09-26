@@ -11,49 +11,50 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
 
 public record HitListener(CustomHitCommand plugin) implements Listener {
 
     @EventHandler
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
-        if (!(event.getDamager() instanceof Player attacker)) {
-            return;
-        }
-
-        if (!(event.getEntity() instanceof Player hittedPlayer)) {
-            return;
-        }
-
-        if (!SecurityUtils.canPlayerUseCommand(attacker.getUniqueId())) {
-            long remainingMs = SecurityUtils.getRemainingCooldown(attacker.getUniqueId());
-            long remainingSeconds = (remainingMs / 1000) + 1;
-
-            Component cooldownMessage = plugin.getFormattedMessage("cooldown-message")
-                    .replaceText(builder -> builder.match("%seconds%").replacement(String.valueOf(remainingSeconds)));
-
-            attacker.sendMessage(cooldownMessage);
+        if (!(event.getDamager() instanceof Player attacker) || !(event.getEntity() instanceof Player hittedPlayer)) {
             return;
         }
 
         ItemStack handItem = attacker.getInventory().getItemInMainHand();
-
-        FileConfiguration config = plugin.getConfig();
-
-        String configuredMaterialName = config.getString("hit-item", "IRON_SWORD");
-        Material requiredMaterial;
-
-        try {
-            requiredMaterial = Material.valueOf(configuredMaterialName.toUpperCase());
-        } catch (IllegalArgumentException e) {
-            plugin.getLogger().severe("=== CONFIGURATION ERROR ===");
-            plugin.getLogger().severe("Invalid material specified in config.yml: " + configuredMaterialName);
-            plugin.getLogger().severe("Using IRON_SWORD as a temporary fallback!");
-            plugin.getLogger().severe("=========================");
-
-            requiredMaterial = Material.IRON_SWORD;
+        if (handItem.getType() == Material.AIR) {
+            return;
         }
 
-        if (handItem.getType() == requiredMaterial) {
+        ItemMeta itemMeta = handItem.getItemMeta();
+        if (itemMeta == null) {
+            return;
+        }
+
+        boolean isMarkedItem = itemMeta.getPersistentDataContainer().has(CustomHitCommand.CUSTOM_ITEM_KEY, PersistentDataType.STRING);
+
+        boolean isConfigItem = false;
+        try {
+            Material requiredMaterial = Material.valueOf(plugin.getConfig().getString("hit-item", "IRON_SWORD").toUpperCase());
+            isConfigItem = handItem.getType() == requiredMaterial;
+        } catch (IllegalArgumentException e) {
+            plugin.getLogger().warning("Invalid material name in config.yml! Defaulting to IRON_SWORD.");
+        }
+
+        if (isMarkedItem || isConfigItem) {
+            if (!SecurityUtils.canPlayerUseCommand(attacker.getUniqueId())) {
+                long remainingMs = SecurityUtils.getRemainingCooldown(attacker.getUniqueId());
+                long remainingSeconds = (remainingMs / 1000) + 1;
+
+                Component cooldownMessage = plugin.getFormattedMessage("cooldown-message")
+                        .replaceText(builder -> builder.match("%seconds%").replacement(String.valueOf(remainingSeconds)));
+
+                attacker.sendMessage(cooldownMessage);
+                return;
+            }
+
+            FileConfiguration config = plugin.getConfig();
             String command = config.getString("command-to-execute", "duel %hitted_player%");
 
             if (!SecurityUtils.isCommandTemplateSafe(command)) {
@@ -86,11 +87,9 @@ public record HitListener(CustomHitCommand plugin) implements Listener {
 
                     plugin.getLogger().info(LegacyComponentSerializer.legacySection().serialize(logMessage));
                 }
-
             } catch (Exception e) {
                 plugin.getLogger().severe("Failed to execute command: " + finalCommand);
                 plugin.getLogger().severe("Error details: " + e.getMessage());
-
                 Component errorMessage = plugin.getFormattedMessage("command-execution-failed");
                 attacker.sendMessage(errorMessage);
             }
