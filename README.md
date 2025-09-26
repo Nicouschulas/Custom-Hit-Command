@@ -27,7 +27,7 @@ I am currently working on adding multi-version support to include all versions f
 
 🔔 **Update Notifications**: An automatic update checker can be configured to notify you in the console or directly in-game (or both) when a new version is available. It can be easily toggled on/off in the configuration.
 
-Get CustomHitCommand now and bring a new layer of excitement to your server!
+**Get CustomHitCommand now and bring a new layer of excitement to your server!**
 
 ## **❓ Q&A:**
 **Why is the compiled plugin (JAR file) larger than the source code on GitHub?**
