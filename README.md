@@ -2,7 +2,7 @@
 ![Download count](https://img.shields.io/curseforge/dt/1308743?style=for-the-badge&logo=curseforge&color=D02F2F&link=https://www.curseforge.com/minecraft/bukkit-plugins/chc&link=https://www.curseforge.com/minecraft/bukkit-plugins/chc) ![Modrinth Downloads](https://img.shields.io/modrinth/dt/eXM4AQg2?style=for-the-badge&logo=modrinth&color=D02F2F&link=https%3A%2F%2Fmodrinth.com%2Fplugin%2Fchc&link=https%3A%2F%2Fmodrinth.com%2Fplugin%2Fchc)  ![Spiget Downloads](https://img.shields.io/spiget/downloads/127038?style=for-the-badge&logo=spigotmc&color=D02F2F&link=https%3A%2F%2Fwww.spigotmc.org%2Fresources%2Fchc-custom-hit-command.127038%2F&link=https%3A%2F%2Fwww.spigotmc.org%2Fresources%2Fchc-custom-hit-command.127038%2F) ![Discord](https://img.shields.io/discord/866268252245590016?style=for-the-badge&logo=discord&color=D02F2F&link=https%3A%2F%2Fdiscord.com%2Finvite%2FZ3rrqYSpUE&link=https%3A%2F%2Fdiscord.com%2Finvite%2FZ3rrqYSpUE)
 
 
-**Custom Hit Command** lets you trigger specific commands every time you hit another player with a chosen item group or single item! This **lightweight** and **highly customizable** plugin is built for Paper 1.21, ensuring ⚡**fast performance** and ✨**seamless integration**.
+**Custom Hit Command** lets you trigger specific commands every time you hit another player with a chosen item group or a single item! This **lightweight** and **highly customizable** plugin is built for Paper 1.21, ensuring ⚡**fast performance** and ✨**seamless integration**.
 
 # ⚠️ **DELAY:** ⚠️
 I am currently working on adding multi-version support to include all versions from 1.8 to the latest. This will take some time, so don't be surprised if there are no updates in the next few days.
