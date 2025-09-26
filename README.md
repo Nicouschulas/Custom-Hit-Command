@@ -17,7 +17,7 @@ I am currently working on adding multi-version support to include all versions f
 
 🎯 **Dynamic Command Execution**: Set any server command to run upon a successful hit. You can choose whether the command is executed by the attacking player or the console. Use the **`%hitted_player%`** placeholder to automatically insert the name of the player you hit (e.g., `/duel %hitted_player%`).
 
-✨ **Visual Hit Particles**: Configure eye-catching particle effects to appear at the location of the hit player, adding a visually dynamic element to your commands.
+✨ **Visual Hit Particles**: Configure eye-catching particle effects to appear at the location of the hitted player, adding a visually dynamic element to your commands.
 
 💬 **Customizable Messages**: Tailor nearly all plugin messages to match your server's style.
 
