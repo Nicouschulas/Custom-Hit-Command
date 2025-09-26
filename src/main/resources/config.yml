@@ -33,6 +33,7 @@ command-to-execute: duel %hitted_player%
 # "player" runs the command as the attacking player.
 command-executor: "player"
 
+
 # --- particle configuration ---
 
 particles:
@@ -80,9 +81,9 @@ messages:
   no-permission: "&cYou do not have permission to use this command."
   ###################################################################################################
   reload-success: "&aCustom Hit Command reloaded successfully!"
-  reload-usage: "&aUse: &7/&cchc reload"
+  reload-usage: "&cUse: &7/&cchc reload"
   ###################################################################################################
-  cooldown-message: "&cYou must wait %seconds% seconds before you can use this command again."
+  cooldown-message: "&cYou must wait &e%seconds% &cseconds before you can use this command again!"
   ###################################################################################################
   command-executed-log: "&a%attacker% hit %hitted_player% with an %item%. Command executed: %command%"
   ###################################################################################################
