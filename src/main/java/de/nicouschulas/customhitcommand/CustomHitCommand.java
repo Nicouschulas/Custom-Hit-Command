@@ -52,11 +52,12 @@ public final class CustomHitCommand extends JavaPlugin implements Listener {
         CUSTOM_ITEM_KEY = new NamespacedKey(this, "custom-hit-item");
 
         getServer().getPluginManager().registerEvents(new HitListener(this), this);
-
         getServer().getPluginManager().registerEvents(this, this);
-        getServer().getPluginManager().registerEvents(new HitListener(this), this);
 
-        Objects.requireNonNull(this.getCommand("chc")).setExecutor(new ReloadCommand(this));
+        ReloadCommand commandHandler = new ReloadCommand(this);
+
+        Objects.requireNonNull(this.getCommand("chc")).setExecutor(commandHandler);
+        Objects.requireNonNull(this.getCommand("chc")).setTabCompleter(commandHandler);
 
         int pluginId = 26615;
         new Metrics(this, pluginId);
