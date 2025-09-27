@@ -83,6 +83,11 @@ messages:
   reload-success: "&aCustom Hit Command reloaded successfully!"
   reload-usage: "&cUse: &7/&cchc reload"
   ###################################################################################################
+  sethititem-player-only: "&cThis command can only be executed by a player."
+  sethititem-no-hand-item: "&cYou must hold an item in your hand to mark it!"
+  sethititem-no-item-meta: "&cThis item cannot be marked!"
+  sethititem-success: "&aThe item has been successfully marked as a hit item!"
+  ###################################################################################################
   cooldown-message: "&cYou must wait &e%seconds% &cseconds before you can use this command again!"
   ###################################################################################################
   command-executed-log: "&a%attacker% hit %hitted_player% with an %item%. Command executed: %command%"
