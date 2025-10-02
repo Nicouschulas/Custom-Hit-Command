@@ -1,6 +1,5 @@
 package de.nicouschulas.customhitcommand;
 
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -16,11 +15,6 @@ import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 public record ReloadCommand(CustomHitCommand plugin) implements CommandExecutor, TabCompleter {
-
-    private static final LegacyComponentSerializer COLOR_SERIALIZER = LegacyComponentSerializer.builder()
-            .character('&')
-            .hexColors()
-            .build();
 
     @Override
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
@@ -40,7 +34,7 @@ public record ReloadCommand(CustomHitCommand plugin) implements CommandExecutor,
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
         if (args.length == 0) {
-            sender.sendMessage(plugin.getFormattedMessage("reload-usage"));
+            sender.sendMessage(plugin.getFormattedMessage("command-usage"));
             return true;
         }
 
@@ -86,6 +80,7 @@ public record ReloadCommand(CustomHitCommand plugin) implements CommandExecutor,
             return true;
         }
 
-        return false;
+        sender.sendMessage(plugin.getFormattedMessage("command-usage"));
+        return true;
     }
 }
