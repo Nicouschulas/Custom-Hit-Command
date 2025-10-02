@@ -9,7 +9,9 @@ I am currently working on adding multi-version support to include all versions f
 
 ## ️**🛡️ Commands & Permissions:**
 - `/chc reload` | `customhitcommand.reload`
+- `/chc sethititem` | `customhitcommand.sethititem`
 - `customhitcommand.update` (for in-game update notifications)
+- `customhitcommand.admin` (parent permission for all administrative commands (reload, sethititem))
 
 ## **🌟 Key Features:**
 
