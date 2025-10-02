@@ -81,7 +81,8 @@ messages:
   no-permission: "&cYou do not have permission to use this command."
   ###################################################################################################
   reload-success: "&aCustom Hit Command reloaded successfully!"
-  reload-usage: "&cUse: &7/&cchc reload"
+  ###################################################################################################
+  command-usage: "&cUsage: &7/&cchc &7<&creload &7| &csethititem&7>"
   ###################################################################################################
   sethititem-player-only: "&cThis command can only be executed by a player."
   sethititem-no-hand-item: "&cYou must hold an item in your hand to mark it!"
