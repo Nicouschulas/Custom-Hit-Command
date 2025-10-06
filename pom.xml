@@ -6,7 +6,7 @@
 
     <groupId>de.nicouschulas</groupId>
     <artifactId>CustomHitCommand</artifactId>
-    <version>1.10</version>
+    <version>1.11</version>
     <packaging>jar</packaging>
 
     <name>CustomHitCommand</name>
