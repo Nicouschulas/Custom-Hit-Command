@@ -28,21 +28,26 @@ public record HitListener(CustomHitCommand plugin) implements Listener {
         }
 
         ItemMeta itemMeta = handItem.getItemMeta();
-        if (itemMeta == null) {
-            return;
+
+        boolean isMarkedItem = false;
+        if (itemMeta != null) {
+            isMarkedItem = itemMeta.getPersistentDataContainer().has(CustomHitCommand.CUSTOM_ITEM_KEY, PersistentDataType.STRING);
         }
 
-        boolean isMarkedItem = itemMeta.getPersistentDataContainer().has(CustomHitCommand.CUSTOM_ITEM_KEY, PersistentDataType.STRING);
+        boolean isConfigItemMatch = false;
+        Material requiredMaterial;
 
-        boolean isConfigItem = false;
         try {
-            Material requiredMaterial = Material.valueOf(plugin.getConfig().getString("hit-item", "IRON_SWORD").toUpperCase());
-            isConfigItem = handItem.getType() == requiredMaterial;
+            requiredMaterial = Material.valueOf(plugin.getConfig().getString("hit-item", "IRON_SWORD").toUpperCase());
+            isConfigItemMatch = handItem.getType() == requiredMaterial;
         } catch (IllegalArgumentException e) {
             plugin.getLogger().warning("Invalid material name in config.yml! Defaulting to IRON_SWORD.");
         }
 
-        if (isMarkedItem || isConfigItem) {
+        boolean executeCommand = isMarkedItem || (plugin.shouldCheckMaterialGroup() && isConfigItemMatch);
+
+
+        if (executeCommand) {
             if (!SecurityUtils.canPlayerUseCommand(attacker.getUniqueId())) {
                 long remainingMs = SecurityUtils.getRemainingCooldown(attacker.getUniqueId());
                 long remainingSeconds = (remainingMs / 1000) + 1;

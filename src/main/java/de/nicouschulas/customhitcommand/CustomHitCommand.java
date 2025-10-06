@@ -36,6 +36,8 @@ public final class CustomHitCommand extends JavaPlugin implements Listener {
     private double particleOffsetY;
     private double particleOffsetZ;
 
+    private boolean checkMaterialGroup;
+
     private boolean enhancedSecurityLogging;
 
     public boolean isEnhancedSecurityLogging() {
@@ -54,7 +56,7 @@ public final class CustomHitCommand extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(new HitListener(this), this);
         getServer().getPluginManager().registerEvents(this, this);
 
-        ReloadCommand commandHandler = new ReloadCommand(this);
+        CHCCommandHandler commandHandler = new CHCCommandHandler(this);
 
         Objects.requireNonNull(this.getCommand("chc")).setExecutor(commandHandler);
         Objects.requireNonNull(this.getCommand("chc")).setTabCompleter(commandHandler);
@@ -154,9 +156,17 @@ public final class CustomHitCommand extends JavaPlugin implements Listener {
     @Override
     public void reloadConfig() {
         super.reloadConfig();
+
+        this.checkMaterialGroup = getConfig().getBoolean("check-material-group", true);
+
         loadSecuritySettings();
         loadPrefix();
         loadParticleSettings();
+
+        CHCCommandHandler commandHandler = new CHCCommandHandler(this);
+
+        Objects.requireNonNull(this.getCommand("chc")).setExecutor(commandHandler);
+        Objects.requireNonNull(this.getCommand("chc")).setTabCompleter(commandHandler);
     }
 
     private void checkForUpdates() {
@@ -164,27 +174,23 @@ public final class CustomHitCommand extends JavaPlugin implements Listener {
             return;
         }
 
-        String notifyMethod = getConfig().getString("update-checker.notify-method", "both");
+        final String notifyMethod = getConfig().getString("update-checker.notify-method", "both");
+        final String currentVersion = getPluginMeta().getVersion();
 
         Bukkit.getScheduler().runTaskAsynchronously(this, () -> {
             try {
-                URL url = new URI("https://api.modrinth.com/v2/project/eXM4AQg2/version?loaders=paper&game_versions=1.21").toURL();
+                URL url = new URI("https://api.modrinth.com/v2/project/eXM4AQg2/version").toURL();
 
                 try (InputStream inputStream = url.openStream(); Scanner scanner = new Scanner(inputStream)) {
-                    StringBuilder response = new StringBuilder();
-                    while (scanner.hasNextLine()) {
-                        response.append(scanner.nextLine());
-                    }
-                    String json = response.toString();
+                    String json = scanner.useDelimiter("\\A").next();
 
                     if (json.contains("\"version_number\":\"")) {
                         String fetchedLatestVersion = json.split("\"version_number\":\"")[1].split("\"")[0];
-                        String currentVersion = getPluginMeta().getVersion();
 
                         if (!currentVersion.equals(fetchedLatestVersion)) {
                             this.latestVersion = fetchedLatestVersion;
 
-                            if (notifyMethod.equals("console") || notifyMethod.equals("both")) {
+                            if (notifyMethod.equalsIgnoreCase("console") || notifyMethod.equalsIgnoreCase("both")) {
                                 getLogger().warning("-----------------------------------------------------");
                                 getLogger().warning("A new version of Custom Hit Command is available!");
                                 getLogger().warning("Current version: " + currentVersion);
@@ -196,7 +202,7 @@ public final class CustomHitCommand extends JavaPlugin implements Listener {
                     }
                 }
             } catch (IOException | URISyntaxException e) {
-                getLogger().warning("Update checker failed to connect to the server!");
+                getLogger().log(Level.FINER, "Update checker failed to connect to the server!", e);
             }
         });
     }
@@ -232,5 +238,9 @@ public final class CustomHitCommand extends JavaPlugin implements Listener {
                 getLogger().fine("Security maintenance: old cooldown entries cleaned.");
             }
         }, 12000L, 12000L);
+    }
+
+    public boolean shouldCheckMaterialGroup() {
+        return this.checkMaterialGroup;
     }
 }
