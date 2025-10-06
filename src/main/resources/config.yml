@@ -16,6 +16,11 @@
 # https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
 hit-item: IRON_SWORD
 
+# Should the plugin also check the general material ('hit-item')
+# alongside the custom-marked item?
+# Set to 'false' if you ONLY want to allow the item marked with /chc sethititem.
+check-material-group: true
+
 
 # --- command to execute configuration ---
 

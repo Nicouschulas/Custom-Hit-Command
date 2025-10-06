@@ -28,3 +28,7 @@ permissions:
   customhitcommand.sethititem:
     description: Allows a player to mark an item as the custom hit item.
     default: op
+
+  customhitcommand.update:
+    description: Allows a player to receive in-game update notifications.
+    default: op
