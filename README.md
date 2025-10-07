@@ -21,7 +21,7 @@
 
 🔔 **Update Notifications**: An automatic update checker can be configured to notify you in the console or directly in-game (or both) when a new version is available. It can be easily toggled on/off in the configuration.
 
-**Get CustomHitCommand now and bring a new layer of excitement to your server!**
+**Get Custom Hit Command now and bring a new layer of excitement to your server!**
 
 ## ️**🛡️ Commands & Permissions:**
 - `/chc reload` | `customhitcommand.reload`
