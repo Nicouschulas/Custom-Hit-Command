@@ -3,7 +3,7 @@
 
 
 ## **❓ What is CHC?**
-**Custom Hit Command** lets you trigger specific commands every time you **hit another player** with a **chosen item group** and/or a **single item**! This **lightweight** and **highly customizable** plugin is built for Paper 1.21, ensuring **fast performance** and **seamless integration**.
+**Custom Hit Command** let's you trigger specific commands every time you **hit another player** with a **chosen item group** and/or a **single item**! This **lightweight** and **highly customizable** plugin is built for Paper 1.21, ensuring **fast performance** and **seamless integration**.
 
 ## **🌟 Key Features:**
 
