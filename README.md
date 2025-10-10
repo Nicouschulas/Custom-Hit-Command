@@ -33,7 +33,7 @@
 ## **❓ Q&A:**
 **Why is the compiled plugin (JAR file) larger than the source code on GitHub?**
 
-Our plugin includes dependencys like **bStats** to gather anonymous usage statistics. When the plugin is compiled into a single JAR file, the bStats library (along with all its own dependencies) is packaged directly into the final plugin file. This process, called 'shading', makes the plugin self-contained which naturally increases the overall file size compared to just the raw source code.
+Our plugin includes dependencies like **bStats** to gather anonymous usage statistics. When the plugin is compiled into a single JAR file, the bStats library (along with all its own dependencies) is packaged directly into the final plugin file. This process, called 'shading', makes the plugin self-contained which naturally increases the overall file size compared to just the raw source code.
 
 ## **🆘 Need Help?**
 If you encounter any problems, bugs, or have questions about the plugin, please don't hesitate to contact me directly. I'll be happy to take a look and provide support! Your positive experience is our priority.
