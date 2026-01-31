@@ -23,6 +23,13 @@
 
 **Get Custom Hit Command now and bring a new layer of excitement to your server!**
 
+## **📥 Downloads:**
+Modrinth: https://modrinth.com/plugin/chc
+
+Curseforge: https://www.curseforge.com/minecraft/bukkit-plugins/chc
+
+Spigot: https://www.spigotmc.org/resources/chc-custom-hit-command.127038/
+
 ## ️**🛡️ Commands & Permissions:**
 - `/chc reload` | `customhitcommand.reload`
 - `/chc sethititem` | `customhitcommand.sethititem`
