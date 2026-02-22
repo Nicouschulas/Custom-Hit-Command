@@ -83,13 +83,13 @@ prefix: "&7[&cCHC&7] " # Don't forget the space at the end!
 # --- message configuration ---
 
 messages:
-  no-permission: "&cYou do not have permission to use this command."
+  no-permission: "&cYou do not have permission to use this command!"
   ###################################################################################################
   reload-success: "&aCustom Hit Command reloaded successfully!"
   ###################################################################################################
   command-usage: "&cUsage: &7/&cchc &7<&creload &7| &csethititem&7>"
   ###################################################################################################
-  sethititem-player-only: "&cThis command can only be executed by a player."
+  sethititem-player-only: "&cThis command can only be executed by a player!"
   sethititem-no-hand-item: "&cYou must hold an item in your hand to mark it!"
   sethititem-no-item-meta: "&cThis item cannot be marked!"
   sethititem-success: "&aThe item has been successfully marked as a hit item!"
@@ -98,4 +98,4 @@ messages:
   ###################################################################################################
   command-executed-log: "&a%attacker% hit %hitted_player% with an %item%. Command executed: %command%"
   ###################################################################################################
-  command-execution-failed: "&cAn error occurred while trying to execute the command."
+  command-execution-failed: "&cAn error occurred while trying to execute the command!"
