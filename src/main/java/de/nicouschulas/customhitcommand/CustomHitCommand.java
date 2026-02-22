@@ -56,13 +56,13 @@ public final class CustomHitCommand extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(new HitListener(this), this);
         getServer().getPluginManager().registerEvents(this, this);
 
-        CHCCommandHandler commandHandler = new CHCCommandHandler(this);
+        CommandHandler commandHandler = new CommandHandler(this);
 
         Objects.requireNonNull(this.getCommand("chc")).setExecutor(commandHandler);
         Objects.requireNonNull(this.getCommand("chc")).setTabCompleter(commandHandler);
 
-        int pluginId = 26615;
-        new Metrics(this, pluginId);
+        int serviceId = 26615;
+        new Metrics(this, serviceId);
 
         checkForUpdates();
 
@@ -163,7 +163,7 @@ public final class CustomHitCommand extends JavaPlugin implements Listener {
         loadPrefix();
         loadParticleSettings();
 
-        CHCCommandHandler commandHandler = new CHCCommandHandler(this);
+        CommandHandler commandHandler = new CommandHandler(this);
 
         Objects.requireNonNull(this.getCommand("chc")).setExecutor(commandHandler);
         Objects.requireNonNull(this.getCommand("chc")).setTabCompleter(commandHandler);
