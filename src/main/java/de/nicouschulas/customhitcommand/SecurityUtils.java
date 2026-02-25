@@ -6,7 +6,8 @@ import java.util.UUID;
 public class SecurityUtils {
 
     private static final ConcurrentHashMap<UUID, Long> lastUsage = new ConcurrentHashMap<>();
-    private static long cooldownTime = 100;
+    private static long cooldownTime;
+    private static final long CLEANUP_CUTOFF_TIME = 30 * 60 * 1000;
 
     public static boolean isCommandTemplateSafe(String commandTemplate) {
         if (commandTemplate == null || commandTemplate.trim().isEmpty()) {
@@ -15,7 +16,8 @@ public class SecurityUtils {
 
         String[] dangerousPatterns = {
                 ";", "&&", "||", "|", "`", "$(",
-                "rm ", "del ", "format ", "shutdown", "stop"
+                "rm ", "del ", "format ", "shutdown", "stop",
+                "\\n", "\\r", "\\t"
         };
 
         String lowerCommand = commandTemplate.toLowerCase();
@@ -54,7 +56,7 @@ public class SecurityUtils {
     }
 
     public static void cleanupOldEntries() {
-        long cutoffTime = System.currentTimeMillis() - (30 * 60 * 1000);
+        long cutoffTime = System.currentTimeMillis() - CLEANUP_CUTOFF_TIME;
         lastUsage.entrySet().removeIf(entry -> entry.getValue() < cutoffTime);
     }
 }

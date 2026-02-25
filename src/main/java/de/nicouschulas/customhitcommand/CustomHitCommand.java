@@ -37,6 +37,10 @@ public final class CustomHitCommand extends JavaPlugin implements Listener {
     private double particleOffsetZ;
 
     private boolean checkMaterialGroup;
+    private boolean ignoreCancelledHits;
+    private Material hitItemMaterial;
+    private String commandToExecute;
+    private String commandExecutor;
 
     private boolean enhancedSecurityLogging;
 
@@ -65,7 +69,6 @@ public final class CustomHitCommand extends JavaPlugin implements Listener {
         new Metrics(this, serviceId);
 
         checkForUpdates();
-
         startSecurityMaintenanceTasks();
 
         getLogger().info("CustomHitCommand started successfully!");
@@ -79,10 +82,6 @@ public final class CustomHitCommand extends JavaPlugin implements Listener {
     public void loadPrefix() {
         String rawPrefix = getConfig().getString("prefix", "&7[&cCHC&7] ");
         this.chatPrefix = legacySerializer.deserialize(rawPrefix);
-
-        if (enhancedSecurityLogging) {
-            getLogger().fine("Chat prefix loaded: " + rawPrefix);
-        }
     }
 
     public void loadParticleSettings() {
@@ -96,7 +95,6 @@ public final class CustomHitCommand extends JavaPlugin implements Listener {
             }
         } catch (IllegalArgumentException e) {
             getLogger().warning("Invalid particle type in config.yml: " + particleTypeName);
-            getLogger().warning("Falling back to HAPPY_VILLAGER.");
             this.particleType = Particle.HAPPY_VILLAGER;
         }
         this.particleCount = Math.max(1, Math.min(100, getConfig().getInt("particles.count", 10)));
@@ -108,49 +106,8 @@ public final class CustomHitCommand extends JavaPlugin implements Listener {
     public void loadSecuritySettings() {
         long cooldownMs = getConfig().getLong("security.cooldown-milliseconds", 3000);
         SecurityUtils.setCooldownTime(cooldownMs);
-        getLogger().info("Security configuration loaded: Command cooldown is " + (cooldownMs / 1000.0) + " seconds.");
-
         this.enhancedSecurityLogging = getConfig().getBoolean("security.enhanced-logging", false);
-        if (this.enhancedSecurityLogging) {
-            getLogger().info("Enhanced security logging is ENABLED.");
-            this.getLogger().setLevel(Level.FINE);
-        } else {
-            this.getLogger().setLevel(Level.INFO);
-        }
-    }
-
-    public Component getFormattedMessage(String messageKey) {
-        String message = getConfig().getString("messages." + messageKey, "Message not found: " + messageKey);
-        Component messageComponent = legacySerializer.deserialize(message);
-        return chatPrefix.append(messageComponent);
-    }
-
-    public void spawnHitParticles(Location location) {
-        if (!particlesEnabled) {
-            return;
-        }
-
-        World world = location.getWorld();
-        if (world == null) {
-            return;
-        }
-
-        try {
-            world.spawnParticle(
-                    particleType,
-                    location,
-                    particleCount,
-                    particleOffsetX,
-                    particleOffsetY,
-                    particleOffsetZ
-            );
-        } catch (Exception e) {
-            getLogger().warning("Failed to spawn particles: " + e.getMessage());
-        }
-
-        if (enhancedSecurityLogging) {
-            getLogger().fine("Particles spawned at " + location);
-        }
+        this.getLogger().setLevel(this.enhancedSecurityLogging ? Level.FINE : Level.INFO);
     }
 
     @Override
@@ -158,15 +115,45 @@ public final class CustomHitCommand extends JavaPlugin implements Listener {
         super.reloadConfig();
 
         this.checkMaterialGroup = getConfig().getBoolean("check-material-group", true);
+        this.ignoreCancelledHits = getConfig().getBoolean("ignore-cancelled-hits", true);
+        this.commandToExecute = getConfig().getString("command-to-execute", "duel %hitted_player%");
+        this.commandExecutor = getConfig().getString("command-executor", "player");
+
+        String matName = getConfig().getString("hit-item", "IRON_SWORD");
+        try {
+            this.hitItemMaterial = Material.valueOf(matName.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            getLogger().warning("Invalid material name in config.yml! Defaulting to IRON_SWORD.");
+            this.hitItemMaterial = Material.IRON_SWORD;
+        }
 
         loadSecuritySettings();
         loadPrefix();
         loadParticleSettings();
 
         CommandHandler commandHandler = new CommandHandler(this);
-
         Objects.requireNonNull(this.getCommand("chc")).setExecutor(commandHandler);
         Objects.requireNonNull(this.getCommand("chc")).setTabCompleter(commandHandler);
+    }
+
+    public Material getHitItemMaterial() { return hitItemMaterial; }
+    public String getCommandToExecute() { return commandToExecute; }
+    public String getCommandExecutor() { return commandExecutor; }
+    public boolean shouldCheckMaterialGroup() { return checkMaterialGroup; }
+    public boolean isIgnoreCancelledHits() { return ignoreCancelledHits; }
+
+    public Component getFormattedMessage(String messageKey) {
+        String message = getConfig().getString("messages." + messageKey, "Message not found: " + messageKey);
+        return chatPrefix.append(legacySerializer.deserialize(message));
+    }
+
+    public void spawnHitParticles(Location location) {
+        if (!particlesEnabled || location.getWorld() == null) return;
+        try {
+            location.getWorld().spawnParticle(particleType, location, particleCount, particleOffsetX, particleOffsetY, particleOffsetZ);
+        } catch (Exception e) {
+            getLogger().warning("Failed to spawn particles: " + e.getMessage());
+        }
     }
 
     private void checkForUpdates() {
@@ -180,7 +167,6 @@ public final class CustomHitCommand extends JavaPlugin implements Listener {
         Bukkit.getScheduler().runTaskAsynchronously(this, () -> {
             try {
                 URL url = new URI("https://api.modrinth.com/v2/project/eXM4AQg2/version").toURL();
-
                 try (InputStream inputStream = url.openStream(); Scanner scanner = new Scanner(inputStream)) {
                     String json = scanner.useDelimiter("\\A").next();
 
@@ -225,22 +211,12 @@ public final class CustomHitCommand extends JavaPlugin implements Listener {
                         .clickEvent(ClickEvent.openUrl("https://modrinth.com/plugin/chc/versions"));
 
                 Component updateMessage = chatPrefix.append(textComponent).append(linkComponent);
-
                 player.sendMessage(updateMessage);
             }
         }
     }
 
     private void startSecurityMaintenanceTasks() {
-        Bukkit.getScheduler().runTaskTimerAsynchronously(this, () -> {
-            SecurityUtils.cleanupOldEntries();
-            if (enhancedSecurityLogging) {
-                getLogger().fine("Security maintenance: old cooldown entries cleaned.");
-            }
-        }, 12000L, 12000L);
-    }
-
-    public boolean shouldCheckMaterialGroup() {
-        return this.checkMaterialGroup;
+        Bukkit.getScheduler().runTaskTimerAsynchronously(this, SecurityUtils::cleanupOldEntries, 12000L, 12000L);
     }
 }

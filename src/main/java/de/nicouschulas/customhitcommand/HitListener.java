@@ -1,13 +1,12 @@
 package de.nicouschulas.customhitcommand;
 
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
@@ -16,9 +15,17 @@ import org.bukkit.persistence.PersistentDataType;
 
 public record HitListener(CustomHitCommand plugin) implements Listener {
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
+        if (event.isCancelled() && plugin.isIgnoreCancelledHits()) {
+            return;
+        }
+
         if (!(event.getDamager() instanceof Player attacker) || !(event.getEntity() instanceof Player hittedPlayer)) {
+            return;
+        }
+
+        if (!attacker.hasPermission("customhitcommand.use")) {
             return;
         }
 
@@ -28,24 +35,11 @@ public record HitListener(CustomHitCommand plugin) implements Listener {
         }
 
         ItemMeta itemMeta = handItem.getItemMeta();
+        boolean isMarkedItem = itemMeta != null && itemMeta.getPersistentDataContainer().has(CustomHitCommand.CUSTOM_ITEM_KEY, PersistentDataType.STRING);
 
-        boolean isMarkedItem = false;
-        if (itemMeta != null) {
-            isMarkedItem = itemMeta.getPersistentDataContainer().has(CustomHitCommand.CUSTOM_ITEM_KEY, PersistentDataType.STRING);
-        }
-
-        boolean isConfigItemMatch = false;
-        Material requiredMaterial;
-
-        try {
-            requiredMaterial = Material.valueOf(plugin.getConfig().getString("hit-item", "IRON_SWORD").toUpperCase());
-            isConfigItemMatch = handItem.getType() == requiredMaterial;
-        } catch (IllegalArgumentException e) {
-            plugin.getLogger().warning("Invalid material name in config.yml! Defaulting to IRON_SWORD.");
-        }
+        boolean isConfigItemMatch = handItem.getType() == plugin.getHitItemMaterial();
 
         boolean executeCommand = isMarkedItem || (plugin.shouldCheckMaterialGroup() && isConfigItemMatch);
-
 
         if (executeCommand) {
             if (!SecurityUtils.canPlayerUseCommand(attacker.getUniqueId())) {
@@ -59,22 +53,17 @@ public record HitListener(CustomHitCommand plugin) implements Listener {
                 return;
             }
 
-            FileConfiguration config = plugin.getConfig();
-            String command = config.getString("command-to-execute", "duel %hitted_player%");
-
-            if (!SecurityUtils.isCommandTemplateSafe(command)) {
-                plugin.getLogger().severe("=== SECURITY ALERT ===");
-                plugin.getLogger().severe("Unsafe command template detected: " + command);
-                plugin.getLogger().severe("Command execution blocked for security reasons.");
-                plugin.getLogger().severe("===================");
+            String commandTemplate = plugin.getCommandToExecute();
+            if (!SecurityUtils.isCommandTemplateSafe(commandTemplate)) {
+                plugin.getLogger().severe("Blocked unsafe command template: " + commandTemplate);
                 return;
             }
 
-            String finalCommand = command.replace("%hitted_player%", hittedPlayer.getName());
-            String commandExecutor = config.getString("command-executor", "console");
+            String finalCommand = commandTemplate.replace("%hitted_player%", hittedPlayer.getName());
+            String executorType = plugin.getCommandExecutor();
 
             try {
-                if (commandExecutor.equalsIgnoreCase("player")) {
+                if (executorType.equalsIgnoreCase("player")) {
                     attacker.chat("/" + finalCommand);
                 } else {
                     ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();
@@ -84,19 +73,11 @@ public record HitListener(CustomHitCommand plugin) implements Listener {
                 plugin.spawnHitParticles(hittedPlayer.getLocation());
 
                 if (plugin.isEnhancedSecurityLogging()) {
-                    Component logMessage = plugin.getFormattedMessage("command-executed-log")
-                            .replaceText(builder -> builder.match("%attacker%").replacement(attacker.getName()))
-                            .replaceText(builder -> builder.match("%hitted_player%").replacement(hittedPlayer.getName()))
-                            .replaceText(builder -> builder.match("%item%").replacement(handItem.getType().name()))
-                            .replaceText(builder -> builder.match("%command%").replacement(finalCommand));
-
-                    plugin.getLogger().info(LegacyComponentSerializer.legacySection().serialize(logMessage));
+                    plugin.getLogger().info(attacker.getName() + " triggered hit-command on " + hittedPlayer.getName());
                 }
             } catch (Exception e) {
-                plugin.getLogger().severe("Failed to execute command: " + finalCommand);
-                plugin.getLogger().severe("Error details: " + e.getMessage());
-                Component errorMessage = plugin.getFormattedMessage("command-execution-failed");
-                attacker.sendMessage(errorMessage);
+                plugin.getLogger().severe("Error executing hit-command: " + e.getMessage());
+                attacker.sendMessage(plugin.getFormattedMessage("command-execution-failed"));
             }
         }
     }
