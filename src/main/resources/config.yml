@@ -38,6 +38,10 @@ command-to-execute: duel %hitted_player%
 # "player" runs the command as the attacking player.
 command-executor: "player"
 
+# If set to true, the command will NOT be executed if the event was
+# canceled by another plugin (e.g., WorldGuard, Spawn Protection, or Creative Mode).
+ignore-cancelled-hits: true
+
 
 # --- particle configuration ---
 

@@ -3,23 +3,30 @@ version: '${project.version}'
 main: de.nicouschulas.customhitcommand.CustomHitCommand
 api-version: 1.21
 author: nicouschulas
-description: Executes a configurable command when hitting an other player with a configurable item group or a single item!
+description: Executes a configurable command when hitting another player with a configurable item group or a single item!
+
 commands:
   chc:
     description: Manages the Custom Hit Command commands (reload, sethititem).
     usage: "Usage: /chc <reload | sethititem>"
     permission: customhitcommand.admin
-    permission-message: You don't have permission to use this command.
+    permission-message: "&cYou don't have permission to use this command."
     aliases:
       - customhitcommand
 
 permissions:
   customhitcommand.admin:
-    description: Parent permission for all administrative commands (reload, sethititem).
+    description: Parent permission for all administrative commands and usage.
     default: op
     children:
       customhitcommand.reload: true
       customhitcommand.sethititem: true
+      customhitcommand.update: true
+      customhitcommand.use: true
+
+  customhitcommand.use:
+    description: Allows a player to trigger the configured command by hitting someone.
+    default: true
 
   customhitcommand.reload:
     description: Reloads the CustomHitCommand plugin configuration.
