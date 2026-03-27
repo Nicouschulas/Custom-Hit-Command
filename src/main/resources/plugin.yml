@@ -2,7 +2,7 @@ name: CustomHitCommand
 version: '${project.version}'
 main: de.nicouschulas.customhitcommand.CustomHitCommand
 api-version: 1.21
-author: nicouschulas
+author: Nicouschulas
 description: Executes a configurable command when hitting another player with a configurable item group or a single item!
 
 commands:
