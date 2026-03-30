@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 import java.util.Scanner;
 import java.util.logging.Level;
 
@@ -41,6 +42,7 @@ public final class CustomHitCommand extends JavaPlugin implements Listener {
     private Material hitItemMaterial;
     private String commandToExecute;
     private String commandExecutor;
+    private List<String> externalNbtTags;
 
     private boolean enhancedSecurityLogging;
 
@@ -118,6 +120,7 @@ public final class CustomHitCommand extends JavaPlugin implements Listener {
         this.ignoreCancelledHits = getConfig().getBoolean("ignore-cancelled-hits", true);
         this.commandToExecute = getConfig().getString("command-to-execute", "duel %hitted_player%");
         this.commandExecutor = getConfig().getString("command-executor", "player");
+        this.externalNbtTags = getConfig().getStringList("external-nbt-tags");
 
         String matName = getConfig().getString("hit-item", "IRON_SWORD");
         try {
@@ -141,6 +144,7 @@ public final class CustomHitCommand extends JavaPlugin implements Listener {
     public String getCommandExecutor() { return commandExecutor; }
     public boolean shouldCheckMaterialGroup() { return checkMaterialGroup; }
     public boolean isIgnoreCancelledHits() { return ignoreCancelledHits; }
+    public List<String> getExternalNbtTags() { return externalNbtTags; }
 
     public Component getFormattedMessage(String messageKey) {
         String message = getConfig().getString("messages." + messageKey, "Message not found: " + messageKey);
