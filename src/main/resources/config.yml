@@ -16,11 +16,25 @@
 # https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
 hit-item: IRON_SWORD
 
+# List of external NBT keys (PersistentData) from other plugins.
+# If an item has one of these keys, the command will trigger.
+#
+# You can use two formats:
+# 1. "plugin:key"         -> Triggers for ANY item that has this key.
+# 2. "plugin:key=value"   -> Triggers ONLY if the key has this exact value.
+#
+# To find the keys/values:
+# Hold the item in your hand and run "/data get entity @s SelectedItem".
+# Then look for the "PublicBukkitValues" section in the chat.
+external-nbt-tags:
+  - "deluxehubreloaded:server_selector"
+  - "deluxehubreloaded:hotbaritem=duels"
+#  - "anotherplugin:special_key"
+
 # Should the plugin also check the general material ('hit-item')
 # alongside the custom-marked item?
-# Set to 'false' if you ONLY want to allow the item marked with /chc sethititem.
-check-material-group: true
-
+# Set to 'false' if you ONLY want to allow the item marked with /chc sethititem or in the external-nbt-tags list.
+check-material-group: false
 
 # --- command to execute configuration ---
 
@@ -46,14 +60,22 @@ ignore-cancelled-hits: true
 # --- particle configuration ---
 
 particles:
-  enabled: false # Should the particle effect be activated? (true/false)
-  type: VILLAGER_HAPPY # The particle type, e.g. VILLAGER_HAPPY, HEARTS, FLAME, CRIT
+  # Should the particle effect be activated? (true/false)
+  enabled: false
+
+  # The particle type, e.g. VILLAGER_HAPPY, HEARTS, FLAME, CRIT
   # A complete list of particle types can be found here:
   # https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Particle.html
-  count: 10 # The number of particles that will be spawned
-  offset-x: 0.5 # The maximum X-offset from spawnpoint
-  offset-y: 0.5 # The maximum Y-offset from spawnpoint
-  offset-z: 0.5 # The maximum Z-offset from spawnpoint
+  type: VILLAGER_HAPPY
+
+  # The number of particles that will be spawned
+  count: 10
+  # The maximum X-offset from spawnpoint
+  offset-x: 0.5
+  # The maximum Y-offset from spawnpoint
+  offset-y: 0.5
+  # The maximum Z-offset from spawnpoint
+  offset-z: 0.5
 
 
 # --- security configuration ---
@@ -73,7 +95,9 @@ security:
 # --- update checker configuration ---
 
 update-checker:
-  enabled: true # Enable/disable the update checker
+  # Enable/disable the update checker
+  enabled: true
+
   # How should update notifications be displayed?
   # Options: "console", "player" or "both"
   notify-method: "both"
