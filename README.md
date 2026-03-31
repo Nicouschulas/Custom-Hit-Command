@@ -7,7 +7,7 @@
 
 ## **🌟 Key Features:**
 
-🔧 **Configurable Hit Item**: Define which item group and/or single item(s) triggers the action (e.g., all Iron Swords, a Blaze Rod)
+🔧 **Configurable Hit Item**: Define which item group, single item, or external NBT tag triggers the action (e.g., all Iron Swords, marked Blaze Rods, or even plugins like DeluxeHub items via key=value)
 
 🎯 **Dynamic Command Execution**: Set any server command to run upon a successful hit. You can choose whether the command is executed by the attacking player or the console. Use the **`%hitted_player%`** placeholder to automatically insert the name of the player you hit (e.g., `/duel %hitted_player%`)
 
