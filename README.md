@@ -40,6 +40,15 @@ Spigot: https://www.spigotmc.org/resources/chc-custom-hit-command.127038/
 `customhitcommand.admin` (parent permission for all permissions)
 
 
+## **📆 Planned features:**
+- config updater
+- minimessage support
+- multiple commands
+- multiple hit item groups
+- set for every item group a different command executor and command 
+- sound option to play at a successful hit
+
+
 ## **❓ Q&A:**
 **Why is the compiled plugin (JAR file) larger than the source code on GitHub?**
 
