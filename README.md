@@ -47,6 +47,7 @@ Spigot: https://www.spigotmc.org/resources/chc-custom-hit-command.127038/
 - multiple hit item groups
 - set for every item group a different command executor and command 
 - sound option to play at a successful hit
+- folia support
 
 
 ## **❓ Q&A:**
