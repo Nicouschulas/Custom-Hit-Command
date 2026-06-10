@@ -44,6 +44,7 @@ Spigot: https://www.spigotmc.org/resources/chc-custom-hit-command.127038/
 - config updater
 - minimessage support
 - multiple commands
+- command delay
 - multiple hit item groups
 - set for every item group a different command executor and command 
 - sound option to play at a successful hit
