@@ -1,0 +1,129 @@
+#################################################
+#############   _____ _   _  _____  #############
+#############  / ____| | | |/ ____| #############
+############# | |    | |_| | |      #############
+############# | |    |  _  | |      #############
+############# | |____| | | | |____  #############
+#############  \_____|_| |_|\_____| #############
+#################################################
+
+
+# --- hit item configuration ---
+
+# The material name of the item that should trigger the command.
+# Example: IRON_SWORD, DIAMOND_PICKAXE, STICK, BLAZE_ROD
+# A complete list of materials can be found here:
+# https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
+hit-item: IRON_SWORD
+
+# List of external NBT keys (PersistentData) from other plugins.
+# If an item has one of these keys, the command will trigger.
+#
+# You can use two formats:
+# 1. "plugin:key"         -> Triggers for ANY item that has this key.
+# 2. "plugin:key=value"   -> Triggers ONLY if the key has this exact value.
+#
+# To find the keys/values:
+# Hold the item in your hand and run "/data get entity @s SelectedItem".
+# Then look for the "PublicBukkitValues" section in the chat.
+external-nbt-tags:
+  - "deluxehubreloaded:server_selector"
+  - "deluxehubreloaded:hotbaritem=duels"
+#  - "anotherplugin:special_key"
+
+# Should the plugin also check the general material ('hit-item')
+# alongside the custom-marked item?
+# Set to 'false' if you ONLY want to allow the item marked with /chc sethititem or in the external-nbt-tags list.
+check-material-group: false
+
+# --- command to execute configuration ---
+
+# The command to be executed when a player
+# hits another player with the configured item.
+# Use %hitted_player% as placeholder for the name of the hitted player.
+# Please do NOT include the leading slash (/) in the command.
+# Example: duel %hitted_player%
+# Example: give %hitted_player% diamond 1
+command-to-execute: duel %hitted_player%
+
+# The executor of the command.
+# Options: "console" or "player"
+# "console" runs the command as the server console.
+# "player" runs the command as the attacking player.
+command-executor: "player"
+
+# If set to true, the command will NOT be executed if the event was
+# canceled by another plugin (e.g., WorldGuard, Spawn Protection, or Creative Mode).
+ignore-cancelled-hits: true
+
+
+# --- particle configuration ---
+
+particles:
+  # Should the particle effect be activated? (true/false)
+  enabled: false
+
+  # The particle type, e.g. VILLAGER_HAPPY, HEARTS, FLAME, CRIT
+  # A complete list of particle types can be found here:
+  # https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Particle.html
+  type: VILLAGER_HAPPY
+
+  # The number of particles that will be spawned
+  count: 10
+  # The maximum X-offset from spawnpoint
+  offset-x: 0.5
+  # The maximum Y-offset from spawnpoint
+  offset-y: 0.5
+  # The maximum Z-offset from spawnpoint
+  offset-z: 0.5
+
+
+# --- security configuration ---
+
+security:
+  # Cooldown time in milliseconds between command executions per player
+  # This prevents spam-clicking to execute commands rapidly
+  # Minimum: 100 milliseconds
+  cooldown-milliseconds: 100
+
+  # Set to true for more detailed debug messages in the console.
+  # This can be useful for troubleshooting but will produce a lot of log output.
+  # Recommended to keep this false for production servers.
+  enhanced-logging: false
+
+
+# --- update checker configuration ---
+
+update-checker:
+  # Enable/disable the update checker
+  enabled: true
+
+  # How should update notifications be displayed?
+  # Options: "console", "player" or "both"
+  notify-method: "both"
+
+
+# --- prefix configuration ---
+
+prefix: "&7[&cCHC&7] " # Don't forget the space at the end!
+
+
+# --- message configuration ---
+
+messages:
+  no-permission: "&cYou do not have permission to use this command!"
+  ###################################################################################################
+  reload-success: "&aCustom Hit Command reloaded successfully!"
+  ###################################################################################################
+  command-usage: "&cUsage: &7/&cchc &7<&creload &7| &csethititem&7>"
+  ###################################################################################################
+  sethititem-player-only: "&cThis command can only be executed by a player!"
+  sethititem-no-hand-item: "&cYou must hold an item in your hand to mark it!"
+  sethititem-no-item-meta: "&cThis item cannot be marked!"
+  sethititem-success: "&aThe item has been successfully marked as a hit item!"
+  ###################################################################################################
+  cooldown-message: "&cYou must wait &e%seconds% &cseconds before you can use this command again!"
+  ###################################################################################################
+  command-executed-log: "&a%attacker% hit %hitted_player% with an %item%. Command executed: %command%"
+  ###################################################################################################
+  command-execution-failed: "&cAn error occurred while trying to execute the command!"
