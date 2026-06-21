@@ -1,14 +1,16 @@
 package de.nicouschulas.customhitcommand;
 
 import org.bukkit.*;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
-import java.util.Objects;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Objects;
 import java.util.Scanner;
 import java.util.logging.Level;
 
@@ -22,6 +24,12 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
 import org.bstats.bukkit.Metrics;
+
+import io.papermc.paper.command.brigadier.BasicCommand;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
+import java.util.Collection;
+
+import org.jspecify.annotations.NullMarked;
 
 public final class CustomHitCommand extends JavaPlugin implements Listener {
 
@@ -64,8 +72,45 @@ public final class CustomHitCommand extends JavaPlugin implements Listener {
 
         CommandHandler commandHandler = new CommandHandler(this);
 
-        Objects.requireNonNull(this.getCommand("chc")).setExecutor(commandHandler);
-        Objects.requireNonNull(this.getCommand("chc")).setTabCompleter(commandHandler);
+        io.papermc.paper.plugin.lifecycle.event.LifecycleEventManager<org.bukkit.plugin.Plugin> manager = this.getLifecycleManager();
+
+        manager.registerEventHandler(io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents.COMMANDS, event -> {
+            final io.papermc.paper.command.brigadier.Commands commands = event.registrar();
+
+            commands.register(
+                    "chc",
+                    "Manages the Custom Hit Command commands (reload, sethititem).",
+                    java.util.List.of("customhitcommand"),
+                    new BasicCommand() {
+                        @Override
+                        @NullMarked
+                        public void execute(CommandSourceStack source, String[] args) {
+                            org.bukkit.command.PluginCommand command = CustomHitCommand.this.getCommand("chc");
+                            commandHandler.onCommand(source.getSender(), Objects.requireNonNullElseGet(command, () -> new Command("chc") {
+                                @Override
+                                public boolean execute(CommandSender sender, String commandLabel, String[] commandArgs) {
+                                    return false;
+                                }
+                            }), "chc", args);
+                        }
+
+                        @Override
+                        @NullMarked
+                        public Collection<String> suggest(CommandSourceStack source, String[] args) {
+                            org.bukkit.command.PluginCommand command = CustomHitCommand.this.getCommand("chc");
+                            if (command != null) {
+                                return commandHandler.onTabComplete(source.getSender(), command, "chc", args);
+                            }
+                            return java.util.Collections.emptyList();
+                        }
+
+                        @Override
+                        public String permission() {
+                            return "customhitcommand.admin";
+                        }
+                    }
+            );
+        });
 
         int serviceId = 26615;
         new Metrics(this, serviceId);
@@ -133,10 +178,6 @@ public final class CustomHitCommand extends JavaPlugin implements Listener {
         loadSecuritySettings();
         loadPrefix();
         loadParticleSettings();
-
-        CommandHandler commandHandler = new CommandHandler(this);
-        Objects.requireNonNull(this.getCommand("chc")).setExecutor(commandHandler);
-        Objects.requireNonNull(this.getCommand("chc")).setTabCompleter(commandHandler);
     }
 
     public Material getHitItemMaterial() { return hitItemMaterial; }
