@@ -98,10 +98,20 @@ public final class CustomHitCommand extends JavaPlugin implements Listener {
                         @NullMarked
                         public Collection<String> suggest(CommandSourceStack source, String[] args) {
                             org.bukkit.command.PluginCommand command = CustomHitCommand.this.getCommand("chc");
-                            if (command != null) {
-                                return commandHandler.onTabComplete(source.getSender(), command, "chc", args);
-                            }
-                            return java.util.Collections.emptyList();
+
+                            String[] finalArgs = args.length == 0 ? new String[]{""} : args;
+
+                            return commandHandler.onTabComplete(
+                                    source.getSender(),
+                                    Objects.requireNonNullElseGet(command, () -> new Command("chc") {
+                                        @Override
+                                        public boolean execute(CommandSender sender, String commandLabel, String[] commandArgs) {
+                                            return false;
+                                        }
+                                    }),
+                                    "chc",
+                                    finalArgs
+                            );
                         }
 
                         @Override
