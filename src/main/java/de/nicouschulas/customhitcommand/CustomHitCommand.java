@@ -1,14 +1,11 @@
 package de.nicouschulas.customhitcommand;
 
-import org.bukkit.*;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.plugin.java.JavaPlugin;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Scanner;
@@ -18,18 +15,23 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import org.bstats.bukkit.Metrics;
+import org.jspecify.annotations.NullMarked;
+
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
+import org.bukkit.Particle;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
-
-import org.bstats.bukkit.Metrics;
-
+import org.bukkit.plugin.java.JavaPlugin;
 import io.papermc.paper.command.brigadier.BasicCommand;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
-import java.util.Collection;
-
-import org.jspecify.annotations.NullMarked;
 
 public final class CustomHitCommand extends JavaPlugin implements Listener {
 
@@ -154,10 +156,10 @@ public final class CustomHitCommand extends JavaPlugin implements Listener {
             getLogger().warning("Invalid particle type in config.yml: " + particleTypeName);
             this.particleType = Particle.HAPPY_VILLAGER;
         }
-        this.particleCount = Math.max(1, Math.min(100, getConfig().getInt("particles.count", 10)));
-        this.particleOffsetX = Math.max(0.0, Math.min(5.0, getConfig().getDouble("particles.offset-x", 0.5)));
-        this.particleOffsetY = Math.max(0.0, Math.min(5.0, getConfig().getDouble("particles.offset-y", 0.5)));
-        this.particleOffsetZ = Math.max(0.0, Math.min(5.0, getConfig().getDouble("particles.offset-z", 0.5)));
+        this.particleCount = Math.clamp(getConfig().getInt("particles.count", 10), 1, 100);
+        this.particleOffsetX = Math.clamp(getConfig().getDouble("particles.offset-x", 0.5), 0.0, 5.0);
+        this.particleOffsetY = Math.clamp(getConfig().getDouble("particles.offset-y", 0.5), 0.0, 5.0);
+        this.particleOffsetZ = Math.clamp(getConfig().getDouble("particles.offset-z", 0.5), 0.0, 5.0);
     }
 
     public void loadSecuritySettings() {
