@@ -13,7 +13,7 @@
 
 ✨ **Visual Hit Particles**: Configure particle effects to appear at the location of the hitted player, adding a visually dynamic element to your commands
 
-💬 **Customizable Messages**: Tailor nearly all plugin messages to match your server's style
+💬 **Customizable Messages**: Tailor nearly all plugin messages to match your server's style. You can use both modern MiniMessage tags and legacy color codes at the same time!
 
 🔎 **Enhanced Logging**: An optional, enhanced logging system can be enabled to provide detailed debug information for troubleshooting
 
@@ -42,7 +42,6 @@ Spigot: https://www.spigotmc.org/resources/chc-custom-hit-command.127038/
 
 ## **📆 Planned features:**
 - config updater
-- minimessage support
 - multiple commands
 - command delay
 - multiple hit item groups
