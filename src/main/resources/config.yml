@@ -105,11 +105,17 @@ update-checker:
 
 # --- prefix configuration ---
 
+# CustomHitCommand supports both Legacy (&) and MiniMessage tags!
+# Example Legacy: "&7[&cCHC&7] "
+# Example MiniMessage: "<gradient:#ff5f6d:#ffc371>[CHC]</gradient> "
 prefix: "&7[&cCHC&7] " # Don't forget the space at the end!
 
 
 # --- message configuration ---
 
+# CustomHitCommand supports both Legacy (&) and MiniMessage tags!
+# Example Legacy: "&cYou do not have permission to use this command!"
+# Example MiniMessage: "<red>You do not have permission to use this command!</red>"
 messages:
   no-permission: "&cYou do not have permission to use this command!"
   ###################################################################################################

@@ -10,11 +10,12 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Scanner;
 import java.util.logging.Level;
+import java.util.regex.Pattern;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bstats.bukkit.Metrics;
 import org.jspecify.annotations.NullMarked;
 
@@ -36,7 +37,9 @@ import io.papermc.paper.command.brigadier.CommandSourceStack;
 public final class CustomHitCommand extends JavaPlugin implements Listener {
 
     private Component chatPrefix;
-    private final LegacyComponentSerializer legacySerializer = LegacyComponentSerializer.builder().character('&').hexColors().build();
+    private final MiniMessage miniMessage = MiniMessage.miniMessage();
+    private static final Pattern HEX_PATTERN = Pattern.compile("&#([A-Fa-f0-9]{6})");
+
     public static NamespacedKey CUSTOM_ITEM_KEY;
 
     private String latestVersion = null;
@@ -139,8 +142,8 @@ public final class CustomHitCommand extends JavaPlugin implements Listener {
     }
 
     public void loadPrefix() {
-        String rawPrefix = getConfig().getString("prefix", "&7[&cCHC&7] ");
-        this.chatPrefix = legacySerializer.deserialize(rawPrefix);
+        String rawPrefix = getConfig().getString("prefix", "<gray>[<red>CHC<gray>] ");
+        this.chatPrefix = parse(rawPrefix);
     }
 
     public void loadParticleSettings() {
@@ -199,9 +202,41 @@ public final class CustomHitCommand extends JavaPlugin implements Listener {
     public boolean isIgnoreCancelledHits() { return ignoreCancelledHits; }
     public List<String> getExternalNbtTags() { return externalNbtTags; }
 
+    public Component parse(String input) {
+        if (input == null) return Component.empty();
+
+        String prepared = input
+                .replace("&0", "<black>")
+                .replace("&1", "<dark_blue>")
+                .replace("&2", "<dark_green>")
+                .replace("&3", "<dark_aqua>")
+                .replace("&4", "<dark_red>")
+                .replace("&5", "<dark_purple>")
+                .replace("&6", "<gold>")
+                .replace("&7", "<gray>")
+                .replace("&8", "<dark_gray>")
+                .replace("&9", "<blue>")
+                .replace("&a", "<green>")
+                .replace("&b", "<aqua>")
+                .replace("&c", "<red>")
+                .replace("&d", "<light_purple>")
+                .replace("&e", "<yellow>")
+                .replace("&f", "<white>")
+                .replace("&r", "<reset>")
+                .replace("&l", "<bold>")
+                .replace("&o", "<italic>")
+                .replace("&n", "<underlined>")
+                .replace("&m", "<strikethrough>")
+                .replace("&k", "<obfuscated>");
+
+        prepared = HEX_PATTERN.matcher(prepared).replaceAll("<#$1>");
+
+        return miniMessage.deserialize(prepared);
+    }
+
     public Component getFormattedMessage(String messageKey) {
         String message = getConfig().getString("messages." + messageKey, "Message not found: " + messageKey);
-        return chatPrefix.append(legacySerializer.deserialize(message));
+        return chatPrefix.append(parse(message));
     }
 
     public void spawnHitParticles(Location location) {
@@ -262,7 +297,7 @@ public final class CustomHitCommand extends JavaPlugin implements Listener {
             Player player = event.getPlayer();
             if ((notifyMethod.equals("player") || notifyMethod.equals("both")) && player.hasPermission("customhitcommand.update")) {
 
-                Component textComponent = legacySerializer.deserialize("&aA new version of Custom Hit Command is available: " + this.latestVersion + " ");
+                Component textComponent = parse("&aA new version of Custom Hit Command is available: " + this.latestVersion + " ");
 
                 Component linkComponent = Component.text("Click to download it at Modrinth", NamedTextColor.GRAY)
                         .clickEvent(ClickEvent.openUrl("https://modrinth.com/plugin/chc/versions"));

@@ -72,7 +72,7 @@ public record HitListener(CustomHitCommand plugin) implements Listener {
                 long remainingSeconds = (remainingMs / 1000) + 1;
 
                 Component cooldownMessage = plugin.getFormattedMessage("cooldown-message")
-                        .replaceText(builder -> builder.match("%seconds%").replacement(String.valueOf(remainingSeconds)));
+                        .replaceText(builder -> builder.matchLiteral("%seconds%").replacement(String.valueOf(remainingSeconds)));
 
                 attacker.sendMessage(cooldownMessage);
                 return;
