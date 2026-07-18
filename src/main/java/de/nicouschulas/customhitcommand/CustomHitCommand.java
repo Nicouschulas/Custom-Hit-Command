@@ -138,6 +138,7 @@ public final class CustomHitCommand extends JavaPlugin implements Listener {
 
     @Override
     public void onDisable() {
+        getLogger().info("CustomHitCommand is shutting down...");
         getLogger().info("CustomHitCommand shutdown successfully!");
     }
 
