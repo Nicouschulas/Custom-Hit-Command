@@ -33,9 +33,9 @@ Spigot: https://www.spigotmc.org/resources/chc-custom-hit-command.127038/
 
 `/chc sethititem` | `customhitcommand.sethititem`
 
-`customhitcommand.update` (for in-game update notifications)
-
 `customhitcommand.use` (allows the use of the hit item (default true))
+
+`customhitcommand.update` (for in-game update notifications)
 
 `customhitcommand.admin` (parent permission for all permissions)
 
