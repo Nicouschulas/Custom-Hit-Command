@@ -53,7 +53,7 @@ public final class CustomHitCommand extends JavaPlugin implements Listener {
     private Material hitItemMaterial;
     private String commandToExecute;
     private String commandExecutor;
-    private List<String> externalNbtTags;
+    private List<ParsedNbtTag> parsedExternalTags = java.util.Collections.emptyList();
 
     private boolean enhancedSecurityLogging;
 
@@ -179,7 +179,16 @@ public final class CustomHitCommand extends JavaPlugin implements Listener {
         this.ignoreCancelledHits = getConfig().getBoolean("ignore-cancelled-hits", true);
         this.commandToExecute = getConfig().getString("command-to-execute", "duel %hitted_player%");
         this.commandExecutor = getConfig().getString("command-executor", "player");
-        this.externalNbtTags = getConfig().getStringList("external-nbt-tags");
+        List<String> rawTags = getConfig().getStringList("external-nbt-tags");
+        this.parsedExternalTags = rawTags.stream()
+                .map(entry -> {
+                    String[] parts = entry.split("=");
+                    NamespacedKey key = NamespacedKey.fromString(parts[0]);
+                    String expectedValue = parts.length > 1 ? parts[1] : null;
+                    return key != null ? new ParsedNbtTag(key, expectedValue) : null;
+                })
+                .filter(Objects::nonNull)
+                .toList();
 
         String matName = getConfig().getString("hit-item", "IRON_SWORD");
         try {
@@ -199,7 +208,9 @@ public final class CustomHitCommand extends JavaPlugin implements Listener {
     public String getCommandExecutor() { return commandExecutor; }
     public boolean shouldCheckMaterialGroup() { return checkMaterialGroup; }
     public boolean isIgnoreCancelledHits() { return ignoreCancelledHits; }
-    public List<String> getExternalNbtTags() { return externalNbtTags; }
+    public List<ParsedNbtTag> getParsedExternalTags() {
+        return parsedExternalTags;
+    }
 
     public Component parse(String input) {
         if (input == null) return Component.empty();

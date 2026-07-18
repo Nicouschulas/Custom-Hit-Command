@@ -4,7 +4,6 @@ import net.kyori.adventure.text.Component;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -42,19 +41,15 @@ public record HitListener(CustomHitCommand plugin) implements Listener {
         boolean isMarkedItem = itemMeta.getPersistentDataContainer().has(CustomHitCommand.CUSTOM_ITEM_KEY, PersistentDataType.STRING);
 
         boolean hasExternalTag = false;
-        for (String entry : plugin.getExternalNbtTags()) {
-            String[] parts = entry.split("=");
-            String tag = parts[0];
-            String expectedValue = parts.length > 1 ? parts[1] : null;
 
-            NamespacedKey key = NamespacedKey.fromString(tag);
-            if (key != null && itemMeta.getPersistentDataContainer().has(key, PersistentDataType.STRING)) {
-                if (expectedValue == null) {
+        for (ParsedNbtTag entry : plugin.getParsedExternalTags()) {
+            if (itemMeta.getPersistentDataContainer().has(entry.key(), PersistentDataType.STRING)) {
+                if (entry.expectedValue() == null) {
                     hasExternalTag = true;
                     break;
                 } else {
-                    String actualValue = itemMeta.getPersistentDataContainer().get(key, PersistentDataType.STRING);
-                    if (expectedValue.equalsIgnoreCase(actualValue)) {
+                    String actualValue = itemMeta.getPersistentDataContainer().get(entry.key(), PersistentDataType.STRING);
+                    if (entry.expectedValue().equalsIgnoreCase(actualValue)) {
                         hasExternalTag = true;
                         break;
                     }
