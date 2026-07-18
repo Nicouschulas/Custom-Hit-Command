@@ -280,8 +280,8 @@ public final class CustomHitCommand extends JavaPlugin implements Listener {
                         }
                     }
                 }
-            } catch (IOException | URISyntaxException e) {
-                getLogger().log(Level.FINER, "Update checker failed to connect to the server!", e);
+            } catch (Exception e) {
+                getLogger().log(Level.FINER, "Update checker failed to process the response!", e);
             }
         });
     }
