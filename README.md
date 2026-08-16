@@ -3,7 +3,7 @@
 
 
 ## **❓ What is CHC?**
-**Custom Hit Command** let's you trigger specific commands every time you **hit another player** with a **chosen item group** and/or **single item(s)** you marked before with `/chc sethititem`! This **lightweight** and **highly customizable** plugin is built for Paper 26.1, ensuring **fast performance** and **seamless integration**.
+**Custom Hit Command** let's you trigger specific commands every time you **hit another player** with a **chosen item group** and/or **specific item(s)** you marked before with `/chc sethititem` and/or configured through `external-nbt-tags` in the config! This **lightweight** and **highly customizable** plugin is built for Paper 26.1, offering **excellent performance**, **seamless integration** and **high stability**.
 
 ## **🌟 Key Features:**
 
