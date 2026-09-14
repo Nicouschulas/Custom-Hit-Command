@@ -10,6 +10,11 @@ import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -40,7 +45,7 @@ public final class CustomHitCommand extends JavaPlugin implements Listener {
 
     public static NamespacedKey CUSTOM_ITEM_KEY;
 
-    private String latestVersion = null;
+    private volatile String latestVersion = null;
     private boolean particlesEnabled;
     private Particle particleType;
     private int particleCount;
@@ -272,25 +277,31 @@ public final class CustomHitCommand extends JavaPlugin implements Listener {
                 try (InputStream inputStream = url.openStream(); Scanner scanner = new Scanner(inputStream)) {
                     String json = scanner.useDelimiter("\\A").next();
 
-                    if (json.contains("\"version_number\":\"")) {
-                        String fetchedLatestVersion = json.split("\"version_number\":\"")[1].split("\"")[0];
+                    String fetchedLatestVersion = null;
+                    JsonArray versions = JsonParser.parseString(json).getAsJsonArray();
+                    for (JsonElement element : versions) {
+                        JsonObject version = element.getAsJsonObject();
+                        if ("release".equals(version.get("version_type").getAsString())) {
+                            fetchedLatestVersion = version.get("version_number").getAsString();
+                            break;
+                        }
+                    }
 
-                        if (!currentVersion.equals(fetchedLatestVersion)) {
-                            this.latestVersion = fetchedLatestVersion;
+                    if (fetchedLatestVersion != null && !currentVersion.equals(fetchedLatestVersion)) {
+                        this.latestVersion = fetchedLatestVersion;
 
-                            if (notifyMethod.equalsIgnoreCase("console") || notifyMethod.equalsIgnoreCase("both")) {
-                                getLogger().warning("-----------------------------------------------------");
-                                getLogger().warning("A new version of Custom Hit Command is available!");
-                                getLogger().warning("Current version: " + currentVersion);
-                                getLogger().warning("Latest version: " + this.latestVersion);
-                                getLogger().warning("Download it here: https://modrinth.com/plugin/chc/versions");
-                                getLogger().warning("-----------------------------------------------------");
-                            }
+                        if (notifyMethod.equalsIgnoreCase("console") || notifyMethod.equalsIgnoreCase("both")) {
+                            getLogger().warning("-----------------------------------------------------");
+                            getLogger().warning("A new version of Custom Hit Command is available!");
+                            getLogger().warning("Current version: " + currentVersion);
+                            getLogger().warning("Latest version: " + this.latestVersion);
+                            getLogger().warning("Download it here: https://modrinth.com/plugin/chc/versions");
+                            getLogger().warning("-----------------------------------------------------");
                         }
                     }
                 }
             } catch (Exception e) {
-                getLogger().log(Level.FINER, "Update checker failed to process the response!", e);
+                getLogger().warning("Update checker failed to process the response: " + e.getMessage());
             }
         });
     }
@@ -305,7 +316,7 @@ public final class CustomHitCommand extends JavaPlugin implements Listener {
 
         if (this.latestVersion != null) {
             Player player = event.getPlayer();
-            if ((notifyMethod.equals("player") || notifyMethod.equals("both")) && player.hasPermission("customhitcommand.update")) {
+            if ((notifyMethod.equalsIgnoreCase("player") || notifyMethod.equalsIgnoreCase("both")) && player.hasPermission("customhitcommand.update")) {
 
                 Component textComponent = parse("&aA new version of Custom Hit Command is available: " + this.latestVersion + " ");
 
