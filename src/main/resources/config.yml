@@ -33,7 +33,7 @@ external-nbt-tags:
 
 # Should the plugin also check the general material ('hit-item')
 # alongside the custom-marked item?
-# Set to 'false' if you ONLY want to allow the item marked with /chc sethititem or in the external-nbt-tags list.
+# Set to 'false' if you ONLY want to allow the item marked with /chc sethititem or the ones in the external-nbt-tags list.
 check-material-group: false
 
 # --- command to execute configuration ---
